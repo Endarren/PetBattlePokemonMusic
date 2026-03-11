@@ -377,7 +377,7 @@ L["ADD_NEW_SOUND_NAME"] = "Sound Name"
 
 L["ADD_NEW_SOUND_FILE"]=  "Sound File Name"
 	
-L["ADD_NEW_SOUND_LENGTH"]=	"Sound File Name"
+L["ADD_NEW_SOUND_LENGTH"]=	"Sound File Length"
 L["ADD_NEW_SOUND_LENGTH_DESC"] = "The length of the sound file in seconds"
 
 L["ADD_NEW_SOUND_BUTTON"] = "Add Sound"

@@ -60,10 +60,12 @@
 --	* TODO Add option to not use start.
 
 -- ================================================================================================================================================================================================================================================ --
---	Version 2.0
+--	Version 3.0
 -- ================================================================================================================================================================================================================================================ --
---	* TODO  Template adding functions.
---	* TODO  Playlist
+--  Playlist function added
+--  
+
+
 
 PetBattlePokemonMusic = LibStub("AceAddon-3.0"):NewAddon("PetBattlePokemonMusic", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0");
 local L						= LibStub("AceLocale-3.0"):GetLocale("PetBattlePokemonMusic")
@@ -787,7 +789,7 @@ local SoundLibrary = {
 															type = "input",
 															desc = L["ADD_NEW_SOUND_LENGTH_DESC"],
 															get = function()  return neoSoundLengthTemp end,
-															set = function (info, val) neoSoundLengthTemp = tonumber(val) end,
+															set = function (info, val) neoSoundLengthTemp = val end,
 															order = 2
 														},
 									AddNewSoundButton = {
@@ -803,7 +805,7 @@ local SoundLibrary = {
 																				--Name already used
 																				return false
 																			end
-																		PetBattlePokemonMusic.db.global.SoundLibrary[neoSoundNameTemp] = {FileName = neoSoundFileTemp, Length = neoSoundLengthTemp}
+																		PetBattlePokemonMusic.db.global.SoundLibrary[neoSoundNameTemp] = {FileName = neoSoundFileTemp, Length = tonumber(neoSoundLengthTemp)}
 																		PetBattlePokemonMusic:AddSoundToConfig(neoSoundNameTemp)
 															 end,
 															order = 3
@@ -946,6 +948,7 @@ local newCustTracks = {type = "group", name = L["CUST_TRACKS"] , args = {	AddNew
 																									VictoryVol = 1
 																								}
 																								PetBattlePokemonMusic:AddCustomTrack_NewUI (newCustTrackNewName)
+																								PetBattlePokemonMusic:FillCustomTrackList()
 																								newCustTrackNewName = ""
 
 																							end
@@ -3789,6 +3792,180 @@ local currentBattlePlaylist = {}
 --MusicTypes[3] = L["NEW_MUSIC_SELECT_CUST"]
 
 --
+function PetBattlePokemonMusic:UniversialBattleOpening(name, cbplType, typeName, typeTracks)
+
+		currentBattlePlaylist.Type = cbplType
+	if PetBattlePokemonMusic.db.global[typeName].On == false then
+		return false
+	end
+	
+	if PetBattlePokemonMusic.db.global[typeTracks][name] ~= nil then
+		currentBattlePlaylist.Target = name
+		if PetBattlePokemonMusic.db.global[typeTracks][name].Enabled == true then
+			--PetBattlePokemonMusic.db.global[typeTracks][wildName] = {Type = 1, Premade = 1, Custom = 1, Playlist = 1, Enabled =true, Always = true,Volume = {Music = 0.5, Master = 0.5}, Start ={}, Victory = {}}
+			if  PetBattlePokemonMusic.db.global[typeTracks][name].Type == 1 then
+				--Premade
+				
+				
+				if PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade] ~= nil then
+					--print(PetBattlePokemonMusic.db.global[typeTracks][name].Premade)
+					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Music)
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
+					if PetBattlePokemonMusic:IsStartEnabled() then
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary [ 
+						PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].StartSoundKey ] .FileName, "Master")
+						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+
+							
+																	PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].MusicKey].FileName) end,
+																	PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].StartSoundKey].Length)
+					else
+						SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade]].MusicKey].FileName)
+					end
+				end
+			end
+			if  PetBattlePokemonMusic.db.global[typeTracks][name].Type == 2 then
+				--Playlist
+				
+				local playlistKey = PetBattlePokemonMusic.db.global[typeTracks][name].Playlist
+				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Music, PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
+			end
+			if  PetBattlePokemonMusic.db.global[typeTracks][name].Type == 3 then
+				--Custom
+				if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom] ~= nil then
+					
+					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Music *  PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].MusicVol)
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
+					if PetBattlePokemonMusic:IsStartEnabled() then
+						SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].StartVol)
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary [ 
+						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].StartSoundKey ] .FileName, "Master")
+						--PetBattlePokemonMusic.db.global.CustomTracks[
+						--print(PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade])
+						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+							SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
+							--PetBattlePokemonMusic.db.global.CustomTracks[trackID].MusicKey
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].MusicKey].FileName) 
+end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].StartSoundKey].Length)
+					else
+						SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].MusicKey].FileName) 
+					
+					end
+			--		if PetBattlePokemonMusic.db.global[typeName].Custom == false then
+		--		PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+	--		else
+	--			PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+--			end
+				end
+			end
+		else
+				--	Trainer =	{
+			--									MusicType = 1,
+			--									Track		= 2,
+			--									On			= true,
+			--									Always		= true,
+			--									Custom		= false,
+			--									CustomTrack = 1,
+			--									Volume = {Music = 0.5, Master = 0.5},
+			--									Playlist = false,
+			--									PlaylistSelected = 1
+
+			if  PetBattlePokemonMusic.db.global[typeName].MusicType == 2 then
+				
+				local playlistKey = PetBattlePokemonMusic.db.global[typeName].Track
+				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music , PetBattlePokemonMusic.db.global[typeName].Volume.Master)
+			end
+			if  PetBattlePokemonMusic.db.global[typeName].MusicType == 1 then
+				--Premade
+				if PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
+					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music )
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
+					
+					if PetBattlePokemonMusic:IsStartEnabled() then
+
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
+						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end,PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
+					else
+						SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+					end
+				end
+
+			end
+			
+			
+			if  PetBattlePokemonMusic.db.global[typeName].MusicType == 3 then
+				--Custom
+				--PetBattlePokemonMusic.db.global[typeName].CustomTrack
+				if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
+					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music* PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicVol )
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartVol)
+					if PetBattlePokemonMusic:IsStartEnabled() then
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
+						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+							SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
+					else
+						SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+					end
+
+				end
+			end
+
+		end
+	else
+
+	if  PetBattlePokemonMusic.db.global[typeName].MusicType == 1 then
+				--Premade
+				if PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
+					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music )
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
+					
+					if PetBattlePokemonMusic:IsStartEnabled() then
+
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
+						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end
+							,PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
+					else
+						SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+					end
+				end
+
+	end
+		
+			if  PetBattlePokemonMusic.db.global[typeName].MusicType == 2 then
+				
+
+				local playlistKey = PetBattlePokemonMusic.db.global[typeName].Track
+				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music , PetBattlePokemonMusic.db.global[typeName].Volume.Master)
+			end
+		if  PetBattlePokemonMusic.db.global[typeName].MusicType == 3 then
+				--Custom
+				--PetBattlePokemonMusic.db.global[typeName].CustomTrack
+				if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
+					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicVol)
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartVol)
+					--PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track]
+					if PetBattlePokemonMusic:IsStartEnabled() then
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
+						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+							SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
+					else
+						SetCVar("Sound_EnableMusic", 1 )
+						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+					end
+
+				end
+			end
+	end
+end
 function PetBattlePokemonMusic:TamerBattleOpening(name)
 
 		currentBattlePlaylist.Type = "Tamer"
@@ -4341,7 +4518,8 @@ function PetBattlePokemonMusic:PET_BATTLE_OPENING_START(event,...)
 		PetBattlePokemonMusic:WildBattleOpening(name)
 	end
 	if battleType == L["TAMER"]  then
-		PetBattlePokemonMusic:TamerBattleOpening(PetBattlePokemonMusic:GetTamerName ())
+		--PetBattlePokemonMusic:TamerBattleOpening(PetBattlePokemonMusic:GetTamerName ())
+		PetBattlePokemonMusic:UniversialBattleOpening(PetBattlePokemonMusic:GetTamerName (),"Tamer", "Trainer", "TamerTracks")
 	end
 	if battleType == "PvP"  then
 		PetBattlePokemonMusic:PvPBattleOpening(duelistName)
@@ -5100,7 +5278,7 @@ function PetBattlePokemonMusic:PlayBattlePlaylist(playlistIndex, baseVolume, sou
 		end
 		end
 		
-		
+		print("Rand")
 		local nextRandom = random(1,  #PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks)
 		local nextRandomTrack =  PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks[nextRandom]
 		tinsert (PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].PlayedRandom, {Track = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks[nextRandom], Wait = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RandomReuse})
