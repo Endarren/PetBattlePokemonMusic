@@ -47,22 +47,17 @@ function PetBattlePokemonMusic:PlayOpening(battleType, opponentName)
 	local trackKey = nil;
 	local typeName =""
 	local cbplType =""
-	--[[
-	WildTracks	= {},
-								TamerTracks = {},
-								PvPTracks	= {},
-	]]--
 
 	if currentBattleType == L["TAMER"] then
 		trackKey = "TamerTracks"
 		typeName = "Trainer"
 		cbplType = "Tamer"
 	end 
-if currentBattleType == L["WILD"] then
+	if currentBattleType == L["WILD"] then
 		trackKey = "WildTracks"
 		typeName = "Wild"
 		cbplType = "Wild"
-end 
+	end 
 	if currentBattleType == "PvP" then
 		trackKey = "PvPTracks"
 		typeName = "PvP"
@@ -70,15 +65,6 @@ end
 	end
 
 	PetBattlePokemonMusic:UniversialBattleOpening(opponentName, cbplType, typeName, trackKey)
-	
-	--TODO:  Check to see if start sound is enabled for current music selection.
-		--TODO: 
-	--TODO:  For playlist, use playlist function here.
-	--Play opening sound
-end
-
-function PetBattlePokemonMusic:IdentifyOpponent()
-
 end
 
 

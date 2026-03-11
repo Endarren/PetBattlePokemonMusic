@@ -3130,6 +3130,7 @@ function PetBattlePokemonMusic:UniversialBattleOpening(name, cbplType, typeName,
 			end
 			if  PetBattlePokemonMusic.db.global[typeTracks][name].Type == 2 then
 				--Playlist
+				print("Playlist start reached")
 				local playlistKey = PetBattlePokemonMusic.db.global[typeTracks][name].Playlist
 				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Music, PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
 			end

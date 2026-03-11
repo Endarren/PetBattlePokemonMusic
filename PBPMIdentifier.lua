@@ -963,7 +963,7 @@ function PetBattlePokemonMusic:IdentifyBattleType()
 	--PetBattlePokemonMusic:CreateTamerIdentifierData()
 	--Do a scan on the enemy team to see if they match any known teams.
 	local possibleTamerName = PetBattlePokemonMusic:GetTamerName ()
-	if possibleTamerName ~= nil then
+	if possibleTamerName ~= L["UNKNOWN"] then
 		--Return the type and match if found.
 		return L["TAMER"], possibleTamerName
 	end
