@@ -1,5 +1,5 @@
 ## Author: Endar
-## Interface: 50100
+## Interface: 50001
 ## Title: Pet Battle Pokemon Mod
 ## Version: 1.0
 ## SavedVariables: PBPM
