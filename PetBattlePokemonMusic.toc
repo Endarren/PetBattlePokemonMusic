@@ -1,9 +1,15 @@
 ## Author: Endar_Ren
-## Interface: 50100
+## Interface: 50400
 ## Notes: This addon will add Pokemon music to your pet battles, as well as let you make your own tracks that you can use instead.
 ## Title: Pet Battle Pokemon Mod
-## Version: 2.0
+## Version: 3.0
 ## SavedVariables: PBPM
 ## X-Email: Endar_Ren@yahoo.com
 embeds.xml
+Locales\enUS.lua
+Locales\frFR.lua
+Locales\deDE.lua
+Libs\LibTamerID-1.0\LibTamerID-1.0.lua
+Libs\LibTamerID-1.0\LibTamerID-1.0.toc
+Libs\LibTamerID-1.0\LibStub.lua
 PetBattlePokemonMusic.lua

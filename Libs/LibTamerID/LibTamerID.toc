@@ -1,0 +1,7 @@
+## Interface: 50400
+## LoadOnDemand: 1
+## Title: Lib: LibTamerID
+## Notes: 
+## Author: Endar_Ren
+LibStub.lua
+LibTamerID.lua

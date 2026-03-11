@@ -16,5 +16,6 @@
 <Include file="Libs\AceConfig-3.0\AceConfig-3.0.xml"/>
 <Include file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
  <Include file="Libs\AceTab-3.0\AceTab-3.0.xml"/>
+	<Include file="Libs\LibTamerID\LibTamerID-1.0.xml"/>
   <!--<Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>-->
 </Ui>

@@ -1,0 +1,6 @@
+## Interface: 50400
+## Title: Lib: LibTamerID-1.0
+## Notes: 
+## Author: Endar_Ren
+LibStub.lua
+LibTamerID-1.0.lua
