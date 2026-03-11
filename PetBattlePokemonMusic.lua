@@ -4547,10 +4547,11 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				if PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Type == 2 then
 					--Playlist
 					local currTrack = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].CurrentTrack
-					
-					local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
-					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
-					self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					if PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].Tracks[currTrack].UseVictory then
+						local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					end
 					--.VictoryTrack[currTrack].track
 				end
 				if PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Type == 3 then
@@ -4570,11 +4571,13 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				end
 				if PetBattlePokemonMusic.db.global.PvP.MusicType == 2 then
 					--Playlist
+
 					local currTrack = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].CurrentTrack
-					
-					local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
-					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
-					self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					if PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].Tracks[currTrack].UseVictory then
+						local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					end
 				end
 				if PetBattlePokemonMusic.db.global.PvP.MusicType == 3 then
 					local volMultiplier = PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.PvP.Track].VictoryVol
@@ -4598,13 +4601,17 @@ function PetBattlePokemonMusic:VictoryPlayer()
 					--Premade
 				end
 				if PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Type == 2 then
+
+					--PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks[trackIndex].UseVictory 
+					
 					--Playlist
 					local currTrack = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].CurrentTrack
-					
-					local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
-					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
-					self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					if PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].Tracks[currTrack].UseVictory then
+						local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
 					--.VictoryTrack[currTrack].track
+					end
 				end
 				if PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Type == 3 then
 					--Custom
@@ -4624,10 +4631,11 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				if PetBattlePokemonMusic.db.global.Trainer.MusicType == 2 then
 					--Playlist
 					local currTrack = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].CurrentTrack
-					
-					local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
-					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
-					self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					if PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].Tracks[currTrack].UseVictory then
+						local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					end
 				end
 				if PetBattlePokemonMusic.db.global.Trainer.MusicType == 3 then
 					local volMultiplier = PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Trainer.Track].VictoryVol
@@ -4654,10 +4662,11 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				if PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Type == 2 then
 					--Playlist
 					local currTrack = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].CurrentTrack
-					
-					local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
-					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
-					self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					if PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].Tracks[currTrack].UseVictory then
+						local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					end
 					--.VictoryTrack[currTrack].track
 				end
 				if PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Type == 3 then
@@ -4677,10 +4686,11 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				if PetBattlePokemonMusic.db.global.Wild.MusicType == 2 then
 					--Playlist
 					local currTrack = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].CurrentTrack
-					
-					local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
-					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
-					self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					if PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].Tracks[currTrack].UseVictory then
+						local startEffect = PetBattlePokemonMusic.db.global.PlayLists[currentBattlePlaylist.A].VictoryTracks[currTrack].track
+						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].FileName, "Master")
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[startEffect].Length)
+					end
 				end
 				if PetBattlePokemonMusic.db.global.Wild.MusicType == 3 then
 					local volMultiplier = PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.Track].VictoryVol
@@ -5275,15 +5285,17 @@ function PetBattlePokemonMusic:PlayBattlePlaylist(playlistIndex, baseVolume, sou
 		if PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Continuous == false or (PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Continuous == true and PetBattlePokemonMusic:TableSize(PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks)==0 ) then
 			PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks = {}
 			for k,v in pairs (PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks) do
-			tinsert(PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks, k)
-		end
+				tinsert(PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks, k)
+			end
 		end
 		
-		print("Rand")
+
 		local nextRandom = random(1,  #PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks)
+	
 		local nextRandomTrack =  PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks[nextRandom]
 		tinsert (PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].PlayedRandom, {Track = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks[nextRandom], Wait = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RandomReuse})
 		--print("Playing Track: " .. PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks[nextRandom])
+		PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].CurrentTrack = nextRandom
 		local trackID = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks[PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].RemainingTracks[nextRandom]].track
 		if  PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks[nextRandomTrack].UseStart then
 				local startEffect = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].StartTracks[nextRandomTrack].track
@@ -5335,10 +5347,10 @@ function PetBattlePokemonMusic:PlayBattlePlayAfterStart(bat)
 
 	local playlistIndex = bat.A 
 	local baseVol = bat.B 
-	
+	local curr = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].CurrentTrack
 	--TODO Change Sound Volume for AFTER Start Sound ends
-	local trackID = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks[testingCurrentTrack].track
-	SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks[testingCurrentTrack].Vol )
+	local trackID = PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks[curr].track
+	SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.PlayLists[playlistIndex].Tracks[curr].Vol )
 	PetBattlePokemonMusic:PlaylistMusicEnabler()
 	PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[trackID].FileName)
 	
@@ -5349,7 +5361,7 @@ function PetBattlePokemonMusic:PlayBattlePlaylistNext(bat)
 	
 	local playlistIndex = currentBattlePlaylist.A
 	local baseVol = currentBattlePlaylist.B 
-
+	
 	if PetBattlePokemonMusic.db.global.PlayLists[playlistIndex] ~= nil then
 
 	self:CancelTimer(BattlePlaylistTimer, true)
