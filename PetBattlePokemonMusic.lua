@@ -71,6 +71,38 @@ local BPApattern = "|cff4e96f7|HbattlePetAbil:(%d*):%d*:%d*:%d*|h%[.*%]|h|r"
 local iconpattern = "INTERFACE\\ICON\\.*%.BLP:%d*"
 
 
+local damagePattern = ""
+local missPattern = ""
+local dodgePattern =""
+local healedPattern = ""
+local auraAppliedPattern = ""
+local auraFadesPattern = ""
+local weatherChangePattern = ""
+local weatherFadePattern = ""
+
+--This function is supposed to take the client strings for the pet battle combat log,
+--and make patterns that can be used to get information use they are used in the log.
+function PetBattlePokemonMusic:makePattern(str)
+	str2 =string.gsub(str, "%%s", "(.*)")
+	str2 =string.gsub(str2, "%%d", "%(%%d%*%)")
+	str2 =string.gsub(str2, "%)%.", "%)%%.")
+	
+	return str2
+end
+
+
+function PetBattlePokemonMusic:createLocalizedPatterns()
+	damagePattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_DAMAGE)
+	missPattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_MISS)
+	dodgePattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_DODGE)
+	healedPattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_HEALING)
+	auraAppliedPattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_PAD_AURA_APPLIED)
+	auraFadesPattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_PAD_AURA_FADES)
+	weatherChangePattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_WEATHER_AURA_APPLIED)
+	weatherFadePattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_WEATHER_AURA_FADES)
+end
+
+
 --Damaged
 local BPAPatternDealtYour = "(.*) dealt %d* damage to your (.*)%."
 local BPAPatternDealtEnemy = "(.*) dealt %d* damage to enemy (.*)%."
@@ -253,6 +285,11 @@ local main = {
 							set			=	function (info, val) PetBattlePokemonMusic.db.global.VictorySoundOn = val end,
 							get			= function () return PetBattlePokemonMusic.db.global.VictorySoundOn end
 		},
+		resetbut = {
+			type = "execute",
+			name = "Reset Addon",
+			func = function () PetBattlePokemonMusic:Reset() end
+		},
 TrainerCustom = {
 																							order		=	8,
 																							type		= "description",
@@ -305,7 +342,7 @@ local BattleMusic = {
 																									SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Music )
 																								end
 																								end,
-																							order = 3
+																							order = 4
 																		},
 																WildMasterVolume =	{
 																							type = "range",
@@ -322,12 +359,12 @@ local BattleMusic = {
 				
 																								end
 																							end,
-																							order = 3
+																							order = 4
 																},
 
 																		WildTrack =		{
 																							type		=	"select",
-																							order		=	4,
+																							order		=	5,
 																							style		=	"dropdown",
 																							name		=	"Track",
 																							values		=	trackNames,
@@ -339,12 +376,12 @@ local BattleMusic = {
 																							type		=	"toggle",
 																							name		=	"Custom Track",
 																							desc		=	"Toogles whether the music will be used from a custom track",
-																							order		=	5,
+																							order		=	6,
 																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Wild.Custom = val PetBattlePokemonMusic:ToggleCustomWild(val==false)end,
 																							get			=	function () return PetBattlePokemonMusic.db.global.Wild.Custom end
 																						},
 																		WildCustom =	{
-																							order		= 6,
+																							order		= 7,
 																							type		= "description",
 																							name		= "Custom Track: ",
 																							cmdHidden	= true
@@ -361,7 +398,7 @@ local BattleMusic = {
 																							type		=	"toggle",
 																							name		=	"Enabled",
 																							desc		=	"Toogle whether music is played for trainer pet battles or not",
-																							order		=	5,
+																							order		=	3,
 																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Trainer.On = valu end,
 																							get			=	function () return PetBattlePokemonMusic.db.global.Trainer.On end
 																						},
@@ -369,7 +406,7 @@ local BattleMusic = {
 																							type		=	"toggle",
 																							name		=	"Always On",
 																							desc		=	"Toogles whether music will be played if music is disabled on the client",
-																							order		=	5,
+																							order		=	3,
 																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Trainer.Always = val end,
 																							get			=	function () return PetBattlePokemonMusic.db.global.Trainer.Always end
 																	},
@@ -386,7 +423,7 @@ local BattleMusic = {
 																									SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Music )
 																								end
 																								end,
-																							order = 3
+																							order = 5
 																		},
 																TrainerMasterVolume =	{
 																							type = "range",
@@ -401,7 +438,7 @@ local BattleMusic = {
 																									SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Master )
 																								end
 																								end,
-																							order = 3
+																							order = 5
 																},
 																	TrainerTrack =		{
 																							type		=	"select",
@@ -409,7 +446,7 @@ local BattleMusic = {
 																							style		=	"dropdown",
 																							name		=	"Track",
 																							values		=	trackNames,
-																							width		=	"double",
+																							width		=	"full",
 																							set			=	function(info, val) PetBattlePokemonMusic.db.global.Trainer.Track = val  end,
 																							get			=	function() return PetBattlePokemonMusic.db.global.Trainer.Track end
 																						},
@@ -1127,7 +1164,9 @@ function PetBattlePokemonMusic:AddAbility(id)
 		return false
 	end
 end
+
 	function PetBattlePokemonMusic:AddAbilityUI(id)
+
 	demo,a1,a2,a3,a4,a5,a6 = C_PetBattles.GetAbilityInfoByID(tonumber(id))
 	if demo ~= nil then
 
@@ -1140,7 +1179,7 @@ end
 																			damIn =	{
 																						type = "select",
 																						name = "Damage sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Damage.File] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Damage.File] end, -- error on mod overwrite
 																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Damage.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 1
@@ -1253,6 +1292,11 @@ end
 															}
 															
 	end
+	end
+	
+	
+function PetBattlePokemonMusic:ClearAbilities()
+
 end
 function PetBattlePokemonMusic:FILLSOUNDLIST ()
 	str =""
@@ -1283,6 +1327,56 @@ function PetBattlePokemonMusic:AddSoundToAllAbilityOptions(soundkey)
 	
 end
 function PetBattlePokemonMusic:SetUpAbilities()
+	BattlePetAbilitySoundSettings.args = {
+														BPAbilitySounds ={
+																			type = "toggle",
+																			name = "Enabled",
+																			get = function () return PetBattlePokemonMusic.db.global.BPAbilitySoundsOn end,
+																			set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySoundsOn = val end,
+																			order = 1
+														},
+														descbox =		{
+																			type = "description",
+																			name = "Spell: ",
+																			order = 4,
+																			image = "INTERFACE\BUTTONS\UI-EmptySlot.blp"
+																		},
+														BPAInputBox =	{
+																			type = "input",
+																			name = "New Battle Pet Ability ID",
+																			set = function(info, val) idtemp = val 
+																			--print(C_PetBattles.GetAbilityInfoByID(tonumber(val)))
+																			if tonumber(val)== nil then
+																				return false
+																			end
+
+																				if C_PetBattles.GetAbilityInfoByID(tonumber(val)) ~= nil then
+
+																					demo,a1,a2,a3,a4,a5,a6 = C_PetBattles.GetAbilityInfoByID(tonumber(val))
+																					if a1 ~= nil then
+																					--print(a2)
+																						PetBattlePokemonMusic:UpdateDesco(a1,a2)
+																					end
+																				 
+																				else
+																					idtemp=""
+																						PetBattlePokemonMusic:UpdateDescoINVALID()
+																					end
+																				end,
+																			get = function() return idtemp end,
+																			order = 2
+																	
+																		},
+														AddAbility = 	{
+																			type = "execute",
+																			name = "Add",
+																			order = 3,
+																			func = function() PetBattlePokemonMusic:AddAbility(idtemp) idtemp = ""  end
+														
+														
+																		}
+													}
+										
 	for key, val in pairs (PetBattlePokemonMusic.db.global.BPAbilitySounds) do
 		PetBattlePokemonMusic:AddAbilityUI(key)
 	end
@@ -1322,13 +1416,14 @@ local defaults = {
 								TrackNames		= {},
 								BPAbilitySoundsOn = true,
 								BPAbilitySounds = {},
+								RegisteredMods = {},
 								SoundEffects	=	{
 														HealingSound = {Value =3, Enabled = true}
 													} --PetBattlePokemonMusic.db.global.SoundEffects.HealingSound
 				
 			}
 }
-
+--db.global.SoundLibrary[Sound Name].FileName
 --Built in sound files.
 --CustomTracks   SoundLibrary   SoundEffects   BPAbilitySounds
 ----------------------------------Red, Blue, Yellow Sound Files----------------------------------
@@ -1457,14 +1552,21 @@ function PetBattlePokemonMusic:FillSoundListUI()
 	
 	
 end
+
+local PBPMMods = {
+		type = "group",
+		name = "Mods",
+		args = {}
+	
+		}
 function PetBattlePokemonMusic:OnInitialize()
 	---------------------------------------------------------------------------------------------------------------------------------------------
 	-------------------------- Database and Configuration setup  --------------------------
 	---------------------------------------------------------------------------------------------------------------------------------------------
 	self.db = LibStub("AceDB-3.0"):New("PBPM", defaults)
-	
+	--PetBattlePokemonMusic.db.global.BPAbilitySounds = {}	
 
-
+	PetBattlePokemonMusic:createLocalizedPatterns()
 	--CustomTracks   SoundLibrary   SoundEffects   BPAbilitySounds
 	if self.db.profile.CustomTracks ~= nil then
 		for k,y in pairs (self.db.profile.CustomTracks) do
@@ -1504,6 +1606,7 @@ function PetBattlePokemonMusic:OnInitialize()
 	registry:RegisterOptionsTable("Create Custom Track",CreateCustomTrack)
 	registry:RegisterOptionsTable("Custom Tracks",CustomTrackLibrary)
 	registry:RegisterOptionsTable("Battle Pet Sounds",BattlePetAbilitySoundSettings)
+	registry:RegisterOptionsTable("Mods",PBPMMods)
 	
 
 	local dialog = LibStub("AceConfigDialog-3.0")
@@ -1514,7 +1617,8 @@ function PetBattlePokemonMusic:OnInitialize()
 							Library		= dialog:AddToBlizOptions("Sound Library", "Sound Library", "Pet Battle Pokemon Mod"),
 							CreateCust	= dialog:AddToBlizOptions("Create Custom Track", "Create Custom Track", "Pet Battle Pokemon Mod"),
 							Custs		= dialog:AddToBlizOptions("Custom Tracks", "Custom Tracks", "Pet Battle Pokemon Mod"),
-							BPS			= dialog:AddToBlizOptions("Battle Pet Sounds", "Battle Pet Sounds", "Pet Battle Pokemon Mod")
+							BPS			= dialog:AddToBlizOptions("Battle Pet Sounds", "Battle Pet Sounds", "Pet Battle Pokemon Mod"),
+							mods		= dialog:AddToBlizOptions("Mods", "Mods", "Pet Battle Pokemon Mod")
 	}
 	---------------------------------------------------------------------------------------------------------------------------------------------
 	---------------------------------------------- Register Events ----------------------------------------------
@@ -1528,14 +1632,23 @@ function PetBattlePokemonMusic:OnInitialize()
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_RESULTS")
 	self:RegisterEvent("CHAT_MSG_PET_BATTLE_COMBAT_LOG")
 	self:RegisterEvent("CHAT_MSG_PET_BATTLE_INFO")
+
+
+
+
 	---------------------------------------------------------------------------------------------------------------------------------------------
 	--  Set up Functions.
+	PetBattlePokemonMusic:SetUpMods()
 	PetBattlePokemonMusic:SetUpSL()
 	PetBattlePokemonMusic:FillCustomWild()
 	PetBattlePokemonMusic:FillCustomTrainer()
 	PetBattlePokemonMusic:SetUpCustomCreator()
 	PetBattlePokemonMusic:FillCustomLib()
+	
 end
+
+
+
 function PetBattlePokemonMusic:OnEnable()
 
 end
@@ -1551,6 +1664,10 @@ function PetBattlePokemonMusic:IsVictoryEnabled()
 	return PetBattlePokemonMusic.db.global.VictorySoundOn;
 end
 
+function PetBattlePokemonMusic:Reset()
+	PetBattlePokemonMusic.db.global.CustomTracks = {}
+	PetBattlePokemonMusic.db.global.RegisteredMods = {}
+end
 ---
 --
 --@param event The name of the event.
@@ -1560,6 +1677,7 @@ function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_INFO(event, ...)
 end
 function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_COMBAT_LOG(...)
 	demo = {...}
+
 	str = ""
 	--Basic Damage Dealing  INTERFACE\\.*\\.*.%BLP:14|
 	--print(strfind((demo[2]),"INTERFACE\\.*\\.*.%BLP:14|"))
@@ -1567,6 +1685,174 @@ function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_COMBAT_LOG(...)
 	if ty ~= nil then
 		rwr , qwe= strfind((strsub((demo[2]),1,ty)),"INTERFACE\\.*\\.*.%BLP:14.*")
 	end
+
+	--Test for localization
+
+--	local damagePattern = ""
+--local missPattern = ""
+--local dodgePattern =""
+--local healedPattern = ""
+--local auraAppliedPattern = ""
+--local auraFadesPattern = ""
+--local weatherChangePattern = ""
+--local weatherFadePattern = ""
+	if strfind(tostring(demo[2]),auraAppliedPattern)~= nil then
+	--	print("Matches applied")
+	end
+	if strfind(tostring(demo[2]),damagePattern)~= nil then
+		--print("Match damage "..damagePattern)
+		liner = ""
+		if strfind(tostring(demo[2]),damagePattern)~= nil then
+			q1,q2,q3,q4,q5,q6,q7,q8,q9 =strfind(tostring(demo[2]),damagePattern)
+			tabs = {strfind(tostring(demo[2]),damagePattern)}
+			-- tabs = unpack(strfind(tostring(demo[2]),damagePattern))
+			--print(#tabs)
+			if q1~=nil then
+				liner = liner .." 1: "..q1
+				--print("1 "..q1)
+			end
+			if q2~=nil then
+				liner = liner .." 2: "..q2
+			end
+			if q3~=nil then
+				liner = liner .." 3: "..q3
+			end
+			if q4~=nil then
+				liner = liner .." 4: "..q4
+			end
+			if q5~=nil then
+				liner = liner .." 5: "..q5
+			end
+			if q6~=nil then
+				liner = liner .." 6: "..q6
+			end
+			if q7~=nil then
+				liner = liner .." 7: "..q7
+			end
+			if q8~=nil then
+				liner = liner .." 8: "..q8
+			end
+			if q9~=nil then
+				liner = liner .." 9: "..q9
+			end
+		end
+		--print(liner)
+	end
+	if strfind(tostring(demo[2]),missPattern)~= nil then
+		--print("Match miss")
+		liner = ""
+		if strfind(tostring(demo[2]),missPattern)~= nil then
+			q1,q2,q3,q4,q5,q6,q7,q8,q9 =strfind(tostring(demo[2]),missPattern)
+			if q1~=nil then
+				liner = liner .." 1: "..q1
+				--print("1 "..q1)
+			end
+			if q2~=nil then
+				liner = liner .." 2: "..q2
+			end
+			if q3~=nil then
+				liner = liner .." 3: "..q3
+			end
+			if q4~=nil then
+				liner = liner .." 4: "..q4
+			end
+			if q5~=nil then
+				liner = liner .." 5: "..q5
+			end
+			if q6~=nil then
+				liner = liner .." 6: "..q6
+			end
+			if q7~=nil then
+				liner = liner .." 7: "..q7
+			end
+			if q8~=nil then
+				liner = liner .." 8: "..q8
+			end
+			if q9~=nil then
+				liner = liner .." 9: "..q9
+			end
+		end
+	--	print(liner)
+	end
+	if strfind(tostring(demo[2]),dodgePattern)~= nil then
+		--print("Match dodge")
+		liner = ""
+		if strfind(tostring(demo[2]),dodgePattern)~= nil then
+			q1,q2,q3,q4,q5,q6,q7,q8,q9 =strfind(tostring(demo[2]),dodgePattern)
+			if q1~=nil then
+				liner = liner .." 1: "..q1
+				--print("1 "..q1)
+			end
+			if q2~=nil then
+				liner = liner .." 2: "..q2
+			end
+			if q3~=nil then
+				liner = liner .." 3: "..q3
+			end
+			if q4~=nil then
+				liner = liner .." 4: "..q4
+			end
+			if q5~=nil then
+				liner = liner .." 5: "..q5
+			end
+			if q6~=nil then
+				liner = liner .." 6: "..q6
+			end
+			if q7~=nil then
+				liner = liner .." 7: "..q7
+			end
+			if q8~=nil then
+				liner = liner .." 8: "..q8
+			end
+			if q9~=nil then
+				liner = liner .." 9: "..q9
+			end
+		end
+		--print(liner)
+	end
+	if strfind(tostring(demo[2]),healedPattern)~= nil then
+
+		liner = ""
+		if strfind(tostring(demo[2]),healedPattern)~= nil then
+			q1,q2,q3,q4,q5,q6,q7,q8,q9 =strfind(tostring(demo[2]),healedPattern)
+			if q1~=nil then
+				liner = liner .." 1: "..q1
+				--print("1 "..q1)
+			end
+			if q2~=nil then
+				liner = liner .." 2: "..q2
+			end
+			if q3~=nil then
+				liner = liner .." 3: "..q3
+			end
+			if q4~=nil then
+				liner = liner .." 4: "..q4
+			end
+			if q5~=nil then
+				liner = liner .." 5: "..q5
+			end
+			if q6~=nil then
+				liner = liner .." 6: "..q6
+			end
+			if q7~=nil then
+				liner = liner .." 7: "..q7
+			end
+			if q8~=nil then
+				liner = liner .." 8: "..q8
+			end
+			if q9~=nil then
+				liner = liner .." 9: "..q9
+			end
+		end
+		--print(liner)
+	end
+	remake = PET_BATTLE_COMBAT_LOG_DAMAGE;
+	remake = string.gsub(remake, " %%s ", " (%%a*) ")
+	remake = string.gsub(remake, "%%s", "(.*)")
+	remake = string.gsub(remake, "%%d", "%(%%d%*%)")
+	remake = string.gsub(remake, "%)%.", "%)%%.")
+--	print("Remake: "..remake);
+	
 	-- ================================================================================================================================================================================= --
 	--   Damage
 	-- ================================================================================================================================================================================= --
@@ -1884,12 +2170,290 @@ function PetBattlePokemonMusic:PlayBattleTrack()
 		end
 	end
 end
+--------------
+--Mod functions
+function PetBattlePokemonMusic:AddModToUI (modname, tes)
+	size = #PBPMMods.args
+	PBPMMods.args[modname] = {
+								type = "group",
+								name = modname,
+								args = {
+									activa = {
+										type = "execute",
+										name = "Overwrite Effects",
+										confirmText = "Doing this will overwrite all the sound effects for pet abilities you already have.  Do you want to continue?",
+										confirm =  true,
+										func = function ()
+											PetBattlePokemonMusic.db.global.BPAbilitySounds = {}
+											for m, g in pairs (PetBattlePokemonMusic.db.global.RegisteredMods[modname].Effects) do
+											PetBattlePokemonMusic.db.global.BPAbilitySounds[m] = g
+										end
+										PetBattlePokemonMusic:FillSoundListUI()
+											PetBattlePokemonMusic:SetUpAbilities()
+										end,
+										order = 2
+									},
+									activa2 = {
+										type = "execute",
+										name = "Overwrite-Merge Effects",
+										confirmText = "Doing this will overwrite all sound effects for pet abilities you already have that are done in this mod.  Do you want to continue?",
+										confirm =  true,
+										func = function () 
+										for m, g in pairs (PetBattlePokemonMusic.db.global.RegisteredMods[modname].Effects) do
+											PetBattlePokemonMusic.db.global.BPAbilitySounds[m] = g
+										end
+										PetBattlePokemonMusic:FillSoundListUI()
+										PetBattlePokemonMusic:SetUpAbilities()
+										end,
+										order = 2
+									},activa3 = {
+										type = "execute",
+										name = "Append",
+										confirmText = "Doing this will add sounds to any abilities that are not already in the list.  Do you want to continue?",
+										confirm =  true,
+										func = function () 
+										for m, g in pairs (PetBattlePokemonMusic.db.global.RegisteredMods[modname].Effects) do
+											if PetBattlePokemonMusic.db.global.BPAbilitySounds[m] == nil then
+												PetBattlePokemonMusic.db.global.BPAbilitySounds[m] = g
+											end
+										end
+										PetBattlePokemonMusic:FillSoundListUI()
+										PetBattlePokemonMusic:SetUpAbilities()
+										end,
+										order = 2
+									},
+									removeMod = {
+										type = "execute",
+										name = "Remove Mod",
+										func = function () end,
+										order =3
+									},
+									moddesc = {
+										type = "description",
+										name = tes,
+										order = 1
+	},
+									AddNewSoundHeader = {
+															type = "header",
+															name = "Mod Ability Sounds",
+															order = 4,
+															desc = "The sounds added by this mod."
+														}
+									}
+	}
+	for k, v in pairs (PetBattlePokemonMusic.db.global.RegisteredMods[modname].Effects) do
+		demo,a1,a2,a3,a4,a5,a6 = C_PetBattles.GetAbilityInfoByID(tonumber(k))
+		dams = "|cffffd800<|r|cffffd200Damage: |r|cffffd800>|r"
+		--|cffffd800|r|cffffd200%s|r|cffffd800|r
 
-do
-
-function PetBattlePokemonMusic:RegisterPremade(premade)
-	print(premade)
-	testersd = testersd +1
-	main.args.TrainerCustom.name = testersd.." mods loaded"
+		soune = ": ".."|cffffd800|r|cffffd200Damage: |r|cffffd800|r"..v.Damage.File..": ".."|cffffd800|r|cffffd200Healing: |r|cffffd800|r"..v.Healing.File..": ".."|cffffd800|r|cffffd200Applied: |r|cffffd800|r"..v.Applied.File..": ".." |cffffd800|r|cffffd200Dodged: |r|cffffd800|r"..v.Dodged.File..": ".."|cffffd800|r|cffffd200Missed: |r|cffffd800|r"..v.Missed.File..": ".."|cffffd800|r|cffffd200Faded: |r|cffffd800|r"..v.Faded.File..": ".."|cffffd800|r|cffffd200Blocked: |r|cffffd800|r"..v.Blocked.File
+--|cffffd800
+		PBPMMods.args[modname].args[tostring(k)] = {type = "description", name = a1.."  "..soune,order = 5,width		=	"full", image = a2}
+	end
+--PetBattlePokemonMusic.db.global.RegisteredMods[modname].Effects
+	--demo,a1,a2,a3,a4,a5,a6 = C_PetBattles.GetAbilityInfoByID(tonumber(id))
 end
+--BPAbilitySounds
+--PetBattlePokemonMusic.db.global.RegisteredMods[modname].Effects[k]
+function PetBattlePokemonMusic:ImportSound(soundName, soundFile, soundLength)
+	
+end
+function PetBattlePokemonMusic:SetUpMods()
+	for k,v in pairs (PetBattlePokemonMusic.db.global.RegisteredMods) do
+		PetBattlePokemonMusic:AddModToUI (k,PetBattlePokemonMusic.db.global.RegisteredMods[k].Description)
+	end
+end
+
+	--	PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(id)] = {	Damage = {File = "", On = true},
+		--																	Healing ={File = "", On = true},
+		--																	Applied ={File = "", On = true},
+		--																	Dodged = {File = "", On = true},
+		--																	Missed = {File = "", On = true},
+		--																	Faded = {File = "", On = true},
+			--																Blocked ={File = "", On = true}
+			--																}
+	
+function PetBattlePokemonMusic:RegisterPremade(modname, desc, version, soundTable, trackTable, abilityTable)
+
+
+	--PetBattlePokemonMusic.db.global.RegisteredMods
+	if PetBattlePokemonMusic.db.global.RegisteredMods[modname] == nil then
+		-- new mod
+			PetBattlePokemonMusic.db.global.RegisteredMods[modname] = {Version = version, Description = desc, Effects = {}}
+	else
+		if PetBattlePokemonMusic.db.global.RegisteredMods[modname].Version < version then
+		
+		else
+			return false
+		end
+
+	end
+
+	
+	--unusableSoundNames
+	
+
+
+	nameConversionSoundFiles = {}
+	nameConversionTracks = {}
+
+	--Adding sound file data.
+	for k, v in pairs (soundTable) do
+		counter = 1;
+		tempName = k
+		sdbpassed = false
+		reservedpassed = false
+
+		while sdbpassed == false or reservedpassed == false do
+			if PetBattlePokemonMusic.db.global.SoundLibrary[tempName] == nil then
+				sdbpassed = true
+
+			else
+				if PetBattlePokemonMusic.db.global.SoundLibrary[tempName].FileName == v.FileName then
+					nameConversionSoundFiles[k] = tempName
+				--	print(k.." was already in the database under the name "..tempName)
+					sdbpassed = true
+					reservedpassed = true
+				else
+					sdbpassed = false
+				end
+
+			end
+			if unusableSoundNames[tempName] == nil then
+
+				reservedpassed = true
+			else
+				reservedpassed = false
+
+			end
+
+			if sdbpassed and reservedpassed then
+				--print(k.." cleared both sound database and reserved words as "..tempName)
+				if k ~= tempName then
+					nameConversionSoundFiles[k] = tempName
+				end
+			else
+				tempName = k..counter
+				counter = counter+1
+			end
+
+		end
+		PetBattlePokemonMusic.db.global.SoundLibrary[tempName] = v
+		PetBattlePokemonMusic:AddSoundToConfig(tempName)
+		
+	end
+--TODO track check
+	for k, v in pairs (trackTable) do
+		startKey = v.StartSoundKey
+		musicKey = v.MusicKey
+		victorykey = v.VictoryKey
+
+		if nameConversionSoundFiles[startKey] then
+			startKey=nameConversionSoundFiles[startKey]
+		end
+		if nameConversionSoundFiles[musicKey] then
+			musicKey=nameConversionSoundFiles[musicKey]
+		end
+		if nameConversionSoundFiles[victorykey] then
+			victorykey=nameConversionSoundFiles[victorykey]
+		end
+
+
+	
+		counter = 1;
+		tempName = k
+		sdbpassed = true
+		reservedpassed = true
+		while sdbpassed or reservedpassed do
+			if PetBattlePokemonMusic.db.global.CustomTracks[tempName] == nil then
+				sdbpassed = false
+			else
+				if PetBattlePokemonMusic.db.global.CustomTracks[tempName].StartSoundKey == startKey and PetBattlePokemonMusic.db.global.CustomTracks[tempName].MusicKey == musicKey   and PetBattlePokemonMusic.db.global.CustomTracks[tempName].VictoryKey == victorykey  then
+					sdbpassed = false
+				else
+					sdbpassed = true
+				end
+			end
+			if unusableSoundNames[tempName] == nil then
+				reservedpassed = false
+			else
+				reservedpassed = true
+			end
+
+			if sdbpassed or reservedpassed then
+				tempName = k..counter
+				counter = counter +1
+			end
+				
+		end
+		obg = {}
+		obg.StartSoundKey = startKey
+		obg.MusicKey =musicKey
+		obg.VictoryKey = victorykey
+		PetBattlePokemonMusic.db.global.CustomTracks[tempName] = obg
+		PetBattlePokemonMusic:AddCustomTrackToLibrary (tempName)
+
+		
+		
+		--PetBattlePokemonMusic.db.global.CustomTracks
+--StartSoundKey, MusicKey, and VictoryKey
+		
+		--PetBattlePokemonMusic.db.global.SoundLibrary[tempName] = v
+			--PokemonBattleMusicEffects[1] =	{	Name = "Red, Blue, & Yellow Wild Pokemon Battle", 
+				--						StartSoundKey = "Red, Blue, & Yellow Wild Pokemon Battle Start",
+					--					MusicKey = "Red, Blue, & Yellow Wild Pokemon Battle",
+					--					VictoryKey = "Red, Blue, & Yellow Wild Pokemon Battle Victory"
+
+		--PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
+	end
+		PetBattlePokemonMusic:FillCustomWild()
+	PetBattlePokemonMusic:FillCustomTrainer()
+	for k, v in pairs (abilityTable) do
+		copyability = v
+
+
+		--nameConversionSoundFiles
+		if nameConversionSoundFiles[copyability.Damage.File] ~= nil then
+			copyability.Damage.File = nameConversionSoundFiles[copyability.Damage.File]
+		end
+
+		if nameConversionSoundFiles[copyability.Healing.File] ~= nil then
+			copyability.Healing.File = nameConversionSoundFiles[copyability.Healing.File]
+		end
+
+		if nameConversionSoundFiles[copyability.Applied.File] ~= nil then
+			copyability.Applied.File = nameConversionSoundFiles[copyability.Applied.File]
+		end
+
+		if nameConversionSoundFiles[copyability.Dodged.File] ~= nil then
+			copyability.Dodged.File = nameConversionSoundFiles[copyability.Dodged.File]
+		end
+
+		if nameConversionSoundFiles[copyability.Missed.File] ~= nil then
+			copyability.Missed.File = nameConversionSoundFiles[copyability.Missed.File]
+		end
+
+		if nameConversionSoundFiles[copyability.Faded.File] ~= nil then
+			copyability.Faded.File = nameConversionSoundFiles[copyability.Faded.File]
+		end
+
+		if nameConversionSoundFiles[copyability.Blocked.File] ~= nil then
+			copyability.Blocked.File = nameConversionSoundFiles[copyability.Blocked.File]
+		end
+		PetBattlePokemonMusic.db.global.RegisteredMods[modname].Effects[k] = copyability
+	end
+	PetBattlePokemonMusic:AddModToUI (modname,desc)
+	--
+end
+
+	--	PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(id)] = {	Damage = {File = "", On = true},
+		--																	Healing ={File = "", On = true},
+		--																	Applied ={File = "", On = true},
+		--																	Dodged = {File = "", On = true},
+		--																	Missed = {File = "", On = true},
+		--																	Faded = {File = "", On = true},
+			--																Blocked ={File = "", On = true}
+			--																}
+function PetBattlePokemonMusic:ResetToDefaults()
+
 end
