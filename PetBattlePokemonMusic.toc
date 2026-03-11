@@ -1,0 +1,7 @@
+## Author: Endar
+## Interface: 50100
+## Title: Pet Battle Pokemon Mod
+## Version: 1.0
+## SavedVariables: PBPM
+embeds.xml
+PetBattlePokemonMusic.lua
