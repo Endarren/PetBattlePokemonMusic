@@ -303,6 +303,48 @@ L["Wrathion"] = "Wrathion"
 	L["Alex"] = "Alex"
 	L["Dah'da"] ="Dah'da"
 	
+	
+L["Ashlei"] = "Ashlei"
+L["Cymre Brightblade"] = "Cymre Brightblade"
+L["Gargra"] = "Gargra"
+L["Taralune"] = "Taralune"
+L["Tarr the Terrible"] = "Tarr the Terrible"
+L["Vesharr"] = "Vesharr"
+
+-- Garrison
+
+L["Erris (Spores, Dusty, and Salad)"] = "Erris (Spores, Dusty, and Salad)"
+L["Erris (Moon, Mouthy, and Carl)"] = "Erris (Moon, Mouthy, and Carl)"
+L["Erris (Enbi'see, Mal, and Bones)"] = "Erris (Enbi'see, Mal, and Bones)"
+L["Erris (Sprouts, Prince Charming, and Runts)"] = "Erris (Sprouts, Prince Charming, and Runts)"
+L["Erris (Nicodemus, Brisby, and Jenner)"] = "Erris (Nicodemus, Brisby, and Jenner)"
+
+L["Kura Thunderhoof (Spores, Dusty, and Salad)"] = "Kura Thunderhoof (Spores, Dusty, and Salad)"
+L["Kura Thunderhoof (Moon, Mouthy, and Carl)"] = "Kura Thunderhoof (Moon, Mouthy, and Carl)"
+L["Kura Thunderhoof (Enbi'see, Mal, and Bones)"] = "Kura Thunderhoof (Enbi'see, Mal, and Bones)"
+L["Kura Thunderhoof (Sprouts, Prince Charming, and Runts)"] = "Kura Thunderhoof (Sprouts, Prince Charming, and Runts)"
+L["Kura Thunderhoof (Nicodemus, Brisby, and Jenner)"] = "Kura Thunderhoof (Nicodemus, Brisby, and Jenner)"
+
+-- Menageria
+
+L["Eleanor"] = "Eleanor"
+L["Challenge Post (Tirs, Fiero)"] = "Challenge Post (Tirs, Fiero)"
+L["Challenge Post (Rockbiter, Stonechewer, Acidtooth)"] = "Challenge Post (Rockbiter, Stonechewer, Acidtooth)"
+L["Quintessence of Light"] = "Quintessence of Light"
+L["Challenge Post (Blingtron 4999b, Protectron 022481, Protectron 011803)"] = "Challenge Post (Blingtron 4999b, Protectron 022481, Protectron 011803)"
+L["Stitches Jr."] = "Stitches Jr."
+
+L["Challenge Post (Manos, Hanos, Fatos)"] = "Challenge Post (Manos, Hanos, Fatos)"
+L["Squirt (Deebs, Tyri, Puzzle)"] = "Squirt (Deebs, Tyri, Puzzle)"
+L["Challenge Post (Brutus, Rukus)"] = "Challenge Post (Brutus, Rukus)"
+L["Challenge Post (Mr. Terrible, Carroteye, Sloppus)"] = "Challenge Post (Mr. Terrible, Carroteye, Sloppus)"
+L["The Beakinator"] = "The Beakinator"
+L["Challenge Post (Queen Floret, King Floret)"] = "Challenge Post (Queen Floret, King Floret)"
+L["Challenge Post (Kromli, Gromli)"] = "Challenge Post (Kromli, Gromli)"
+L["Challenge Post (Grubbles, Scrags, Stings)"] = "Challenge Post (Grubbles, Scrags, Stings)"
+L["Challenge Post (Jahan, Samm, Archimedes)"] = "Challenge Post (Jahan, Samm, Archimedes)"
+
+
 L["UNKNOWN"]  ="Unknown"
 
 L["ADDON_NAME"] = "Pet Battle Pokemon Mod"

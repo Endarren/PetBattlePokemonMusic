@@ -64,7 +64,12 @@
 -- ================================================================================================================================================================================================================================================ --
 --  Playlist function added
 --  
-
+-- ================================================================================================================================================================================================================================================ --
+--	Version 3.5
+-- ================================================================================================================================================================================================================================================ --
+--
+--  * Moving oppenent Identification data and functions to PBPMIdentifer.lua
+--  * Moving event handlers to PBPMEvents.lua.
 
 
 PetBattlePokemonMusic = LibStub("AceAddon-3.0"):NewAddon("PetBattlePokemonMusic", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0");
@@ -85,387 +90,6 @@ local auraFadesPattern = ""
 local weatherChangePattern = ""
 local weatherFadePattern = ""
 
--- ====================================================================================================
--- Tamer Database
-local pveDB = {}
-pveDB.Tamers = {}
-pveDB.Elites = {}
-
--- ================================================================================================================================================================================================ --
---													NPC Tamers
--- ================================================================================================================================================================================================ --
-
--- - ~Eastern Kingdoms Tamers~2
-
---Eastern Kingdoms Tamers
-
-pveDB.Tamers[L["Julia Stevens"]] = {Pets = {}}
-pveDB.Tamers[L["Julia Stevens"]].Pets[L["Fangs"]]						= {Name = L["Fangs"],				Level = 2, Quality = 2, Breed = 3, Type = 8}
-pveDB.Tamers[L["Julia Stevens"]].Pets[L["Slithers"]]					= {Name = L["Slithers"],			Level = 2, Quality = 2, Breed = 3, Type = 8}
-
-pveDB.Tamers["Old MacDonald"] = {Pets = {}}
-pveDB.Tamers["Old MacDonald"].Pets["Clucks"]					= {Name = "Clucks",				Level = 3, Quality = 2, Breed = 3, Type = 3}
-pveDB.Tamers["Old MacDonald"].Pets["Foe Reaper 800"]			= {Name = "Foe Reaper 800",		Level = 3, Quality = 2, Breed = 3, Type = 10}
-pveDB.Tamers["Old MacDonald"].Pets["Teensy"]					= {Name = "Teensy",				Level = 3, Quality = 2, Breed = 3, Type = 5}
-
-pveDB.Tamers["Lindsay"] = {Pets = {}}
-pveDB.Tamers["Lindsay"].Pets["Dipsy"]							= {Name = "Dipsy",				Level = 5, Quality = 2, Breed = 3, Type = 5}
-pveDB.Tamers["Lindsay"].Pets["Flipsy"]							= {Name = "Flipsy",				Level = 5, Quality = 2, Breed = 9, Type = 5}
-pveDB.Tamers["Lindsay"].Pets["Flufftail"]						= {Name = "Flufftail",			Level = 5, Quality = 2, Breed = 7, Type = 5}
-
-pveDB.Tamers["Eric Davidson"] = {Pets = {}}
-pveDB.Tamers["Eric Davidson"].Pets["Blackfang"]					= {Name = "Blackfang",			Level = 7, Quality = 2, Breed = 8, Type = 8}
-pveDB.Tamers["Eric Davidson"].Pets["Darkwidow"]					= {Name = "Darkwidow",			Level = 7, Quality = 2, Breed = 7, Type = 8}
-pveDB.Tamers["Eric Davidson"].Pets["Webwinder"]					= {Name = "Webwinder",			Level = 7, Quality = 2, Breed = 9, Type = 8}
-
-pveDB.Tamers["Steven Lisbane"] = {Pets = {}}
-pveDB.Tamers["Steven Lisbane"].Pets["Emeralda"]					= {Name = "Emeralda",			Level = 9, Quality = 2, Breed = 6, Type = 6}
-pveDB.Tamers["Steven Lisbane"].Pets["Moonstalker"]				= {Name = "Moonstalker",		Level = 9, Quality = 2, Breed = 8, Type = 6}
-pveDB.Tamers["Steven Lisbane"].Pets["Nanners"]					= {Name = "Nanners",			Level = 9, Quality = 2, Breed = 8, Type = 6}
-
-pveDB.Tamers["Bill Buckler"] = {Pets = {}}
-pveDB.Tamers["Bill Buckler"].Pets["Burgle"]						= {Name = "Burgle",				Level = 11, Quality = 3, Breed = 2, Type = 1}
-pveDB.Tamers["Bill Buckler"].Pets["Eyegouger"]					= {Name = "Eyegouger",			Level = 11, Quality = 3, Breed = 8, Type = 3}
-pveDB.Tamers["Bill Buckler"].Pets["Young Beaky"]				= {Name = "Young Beaky",		Level = 11, Quality = 3, Breed = 9, Type = 3}
-
-pveDB.Tamers["David Kosse"] = {Pets = {}}
-pveDB.Tamers["David Kosse"].Pets["Corpsefeeder"]				= {Name = "Corpsefeeder",		Level = 13, Quality = 3, Breed = 6, Type = 8}
-pveDB.Tamers["David Kosse"].Pets["Plop"]						= {Name = "Plop",				Level = 13, Quality = 3, Breed = 9, Type = 6}
-pveDB.Tamers["David Kosse"].Pets["Subject 142"]					= {Name = "Subject 142",		Level = 13, Quality = 3, Breed = 5, Type = 5}
-
-pveDB.Tamers["Deiza Plaguehorn"] = {Pets = {}}
-pveDB.Tamers["Deiza Plaguehorn"].Pets["Bleakspinner"]			= {Name = "Bleakspinner",		Level = 14, Quality = 3, Breed = 8, Type = 8}
-pveDB.Tamers["Deiza Plaguehorn"].Pets["Plaguebringer"]			= {Name = "Plaguebringer",		Level = 14, Quality = 3, Breed = 6, Type = 4}
-pveDB.Tamers["Deiza Plaguehorn"].Pets["Carrion"]				= {Name = "Carrion",			Level = 14, Quality = 3, Breed = 3, Type = 8}
-
-pveDB.Tamers["Kortas Darkhammer"] = {Pets = {}}
-pveDB.Tamers["Kortas Darkhammer"].Pets["Garnestrasz"]			= {Name = "Garnestrasz",		Level = 15, Quality = 3, Breed = 7, Type = 2}
-pveDB.Tamers["Kortas Darkhammer"].Pets["Obsidion"]				= {Name = "Obsidion",			Level = 15, Quality = 3, Breed = 8, Type = 2}
-pveDB.Tamers["Kortas Darkhammer"].Pets["Verida"]				= {Name = "Verida",				Level = 15, Quality = 3, Breed = 9, Type = 2}
-
-pveDB.Tamers["Everessa"] = {Pets = {}}
-pveDB.Tamers["Everessa"].Pets["Anklor"]							= {Name = "Anklor",				Level = 16, Quality = 3, Breed = 8, Type = 8}
-pveDB.Tamers["Everessa"].Pets["Croaker"]						= {Name = "Croaker",			Level = 16, Quality = 3, Breed = 6, Type = 9}
-pveDB.Tamers["Everessa"].Pets["Dampwing"]						= {Name = "Dampwing",			Level = 16, Quality = 3, Breed = 9, Type = 3}
-
-pveDB.Tamers["Durin Darkhammer"] = {Pets = {}}
-pveDB.Tamers["Durin Darkhammer"].Pets["Comet"]					= {Name = "Comet",				Level = 17, Quality = 3, Breed = 5, Type = 3}
-pveDB.Tamers["Durin Darkhammer"].Pets["Ignious"]				= {Name = "Ignious",			Level = 17, Quality = 3, Breed = 7, Type = 5}
-pveDB.Tamers["Durin Darkhammer"].Pets["Moltar"]					= {Name = "Moltar",				Level = 17, Quality = 3, Breed = 6, Type = 7}
-
-pveDB.Tamers["Lydia Accoste"] = {Pets = {}}
-pveDB.Tamers["Lydia Accoste"].Pets["Bishibosh"]					= {Name = "Bishibosh",			Level = 19, Quality = 3, Breed = 5, Type = 4}
-pveDB.Tamers["Lydia Accoste"].Pets["Jack"]						= {Name = "Jack",				Level = 19, Quality = 3, Breed = 8, Type = 7}
-pveDB.Tamers["Lydia Accoste"].Pets["Nightstalker"]				= {Name = "Nightstalker",		Level = 19, Quality = 3, Breed = 9, Type = 4}
-
-
--- - ~Kalimdor Tamers~2
-
-pveDB.Tamers["Zunta"] = {Pets = {}}
-pveDB.Tamers["Zunta"].Pets["Mumtar"]							= {Name = "Mumtar",				Level = 2, Quality = 2, Breed = 3, Type = 5}
-pveDB.Tamers["Zunta"].Pets["Spike"]								= {Name = "Spike",				Level = 2, Quality = 2, Breed = 3, Type = 8}
-
-pveDB.Tamers["Dagra the Fierce"] = {Pets = {}}
-pveDB.Tamers["Dagra the Fierce"].Pets["Springtail"]				= {Name = "Springtail",			Level = 3, Quality = 2, Breed = 8, Type = 5}
-pveDB.Tamers["Dagra the Fierce"].Pets["Longneck"]				= {Name = "Longneck",			Level = 3, Quality = 2, Breed = 3, Type = 8}
-pveDB.Tamers["Dagra the Fierce"].Pets["Ripper"]					= {Name = "Ripper",				Level = 3, Quality = 2, Breed = 5, Type = 8}
-
-pveDB.Tamers["Analynn"] = {Pets = {}}
-pveDB.Tamers["Analynn"].Pets["Flutterby"]						= {Name = "Flutterby",			Level = 5, Quality = 2, Breed = 5, Type = 3}
-pveDB.Tamers["Analynn"].Pets["Mister Pinch"]					= {Name = "Mister Pinch",		Level = 5, Quality = 2, Breed = 6, Type = 9}
-pveDB.Tamers["Analynn"].Pets["Oozer"]							= {Name = "Oozer",				Level = 5, Quality = 2, Breed = 8, Type = 5}
-
-pveDB.Tamers["Zonya the Sadist"] = {Pets = {}}
-pveDB.Tamers["Zonya the Sadist"].Pets["Acidous"]				= {Name = "Acidous",			Level = 7, Quality = 2, Breed = 9, Type = 8}
-pveDB.Tamers["Zonya the Sadist"].Pets["Constrictor"]			= {Name = "Constrictor",		Level = 7, Quality = 2, Breed = 8, Type = 8}
-pveDB.Tamers["Zonya the Sadist"].Pets["Odoron"]					= {Name = "Odoron",				Level = 7, Quality = 2, Breed = 3, Type = 5}
-
-pveDB.Tamers["Merda Stronghoof"] = {Pets = {}}
-pveDB.Tamers["Merda Stronghoof"].Pets["Ambershell"]				= {Name = "Ambershell",			Level = 9, Quality = 2, Breed = 6, Type = 7}
-pveDB.Tamers["Merda Stronghoof"].Pets["Bounder"]				= {Name = "Bounder",			Level = 9, Quality = 2, Breed = 9, Type = 9}
-pveDB.Tamers["Merda Stronghoof"].Pets["Rockhide"]				= {Name = "Rockhide",			Level = 9, Quality = 2, Breed = 6, Type = 5}
-
-pveDB.Tamers["Cassandra Kaboom"] = {Pets = {}}
-pveDB.Tamers["Cassandra Kaboom"].Pets["Cluckatron"]				= {Name = "Cluckatron",			Level = 11, Quality = 3, Breed = 8, Type = 10}
-pveDB.Tamers["Cassandra Kaboom"].Pets["Gizmo"]					= {Name = "Gizmo",				Level = 11, Quality = 3, Breed = 5, Type = 10}
-pveDB.Tamers["Cassandra Kaboom"].Pets["Whirls"]					= {Name = "Whirls",				Level = 11, Quality = 3, Breed = 9, Type = 10}
-
-pveDB.Tamers["Traitor Gluk"] = {Pets = {}}
-pveDB.Tamers["Traitor Gluk"].Pets["Glimmer"]					= {Name = "Glimmer",			Level = 13, Quality = 3, Breed = 5, Type = 2}
-pveDB.Tamers["Traitor Gluk"].Pets["Prancer"]					= {Name = "Prancer",			Level = 13, Quality = 3, Breed = 9, Type = 5}
-pveDB.Tamers["Traitor Gluk"].Pets["Rasp"]						= {Name = "Rasp",				Level = 13, Quality = 3, Breed = 8, Type = 8}
-
-pveDB.Tamers["Grazzle the Great"] = {Pets = {}}
-pveDB.Tamers["Grazzle the Great"].Pets["Firetooth"]				= {Name = "Firetooth",			Level = 14, Quality = 3, Breed = 7, Type = 2}
-pveDB.Tamers["Grazzle the Great"].Pets["Blaze"]					= {Name = "Blaze",				Level = 14, Quality = 3, Breed = 8, Type = 2}
-pveDB.Tamers["Grazzle the Great"].Pets["Flameclaw"]				= {Name = "Flameclaw",			Level = 14, Quality = 3, Breed = 4, Type = 2}
-
-pveDB.Tamers["Kela Grimtotem"] = {Pets = {}}
-pveDB.Tamers["Kela Grimtotem"].Pets["Cho'guana"]				= {Name = "Cho'guana",			Level = 15, Quality = 3, Breed = 7, Type = 8}
-pveDB.Tamers["Kela Grimtotem"].Pets["Indigon"]					= {Name = "Indigon",			Level = 15, Quality = 3, Breed = 6, Type = 5}
-pveDB.Tamers["Kela Grimtotem"].Pets["Plague"]					= {Name = "Plague",				Level = 15, Quality = 3, Breed = 8, Type = 5}
-
-pveDB.Tamers["Zoltan"] = {Pets = {}}
-pveDB.Tamers["Zoltan"].Pets["Beamer"]							= {Name = "Beamer",				Level = 16, Quality = 3, Breed = 4, Type = 6}
-pveDB.Tamers["Zoltan"].Pets["Hatewalker"]						= {Name = "Hatewalker",			Level = 16, Quality = 3, Breed = 6, Type = 10}
-pveDB.Tamers["Zoltan"].Pets["Ultramus"]							= {Name = "Ultramus",			Level = 16, Quality = 3, Breed = 7, Type = 6}
-
-pveDB.Tamers["Elena Flutterfly"] = {Pets = {}}
-pveDB.Tamers["Elena Flutterfly"].Pets["Willow"]					= {Name = "Willow",				Level = 17, Quality = 3, Breed = 8, Type = 2}
-pveDB.Tamers["Elena Flutterfly"].Pets["Beacon"]					= {Name = "Beacon",				Level = 17, Quality = 3, Breed = 7, Type = 6}
-pveDB.Tamers["Elena Flutterfly"].Pets["Lacewing"]				= {Name = "Lacewing",			Level = 17, Quality = 3, Breed = 9, Type = 3}
-
-pveDB.Tamers["Stone Cold Trixxy"] = {Pets = {}}
-pveDB.Tamers["Stone Cold Trixxy"].Pets["Blizzy"]				= {Name = "Blizzy",				Level = 19, Quality = 3, Breed = 5, Type = 3}
-pveDB.Tamers["Stone Cold Trixxy"].Pets["Frostmaw"]				= {Name = "Frostmaw",			Level = 19, Quality = 3, Breed = 8, Type = 8}
-pveDB.Tamers["Stone Cold Trixxy"].Pets["Tinygos"]				= {Name = "Tinygos",			Level = 19, Quality = 3, Breed = 9, Type = 2}
-
-
--- - ~Outlands Tamers~2
-
-pveDB.Tamers["Nicki Tinytech"] = {Pets = {}}
-pveDB.Tamers["Nicki Tinytech"].Pets["ED-005"]					= {Name = "ED-005",				Level = 20, Quality = 3, Breed = 7, Type = 10}
-pveDB.Tamers["Nicki Tinytech"].Pets["Goliath"]					= {Name = "Goliath",			Level = 20, Quality = 3, Breed = 7, Type = 10}
-pveDB.Tamers["Nicki Tinytech"].Pets["Sploder"]					= {Name = "Sploder",			Level = 20, Quality = 3, Breed = 6, Type = 10}
-
-pveDB.Tamers["Ras'an"] = {Pets = {}}
-pveDB.Tamers["Ras'an"].Pets["Fungor"]							= {Name = "Fungor",				Level = 21, Quality = 3, Breed = 6, Type = 1}
-pveDB.Tamers["Ras'an"].Pets["Glitterfly"]						= {Name = "Glitterfly",			Level = 21, Quality = 3, Breed = 5, Type = 3}
-pveDB.Tamers["Ras'an"].Pets["Tripod"]							= {Name = "Tripod",				Level = 21, Quality = 3, Breed = 3, Type = 6}
-
-pveDB.Tamers["Narrok"] = {Pets = {}}
-pveDB.Tamers["Narrok"].Pets["Stompy"]							= {Name = "Stompy",				Level = 22, Quality = 3, Breed = 6, Type = 8}
-pveDB.Tamers["Narrok"].Pets["Prince Wart"]						= {Name = "Prince Wart",		Level = 22, Quality = 3, Breed = 3, Type = 9}
-pveDB.Tamers["Narrok"].Pets["Dramaticus"]						= {Name = "Dramaticus",			Level = 22, Quality = 3, Breed = 8, Type = 5}
-
-pveDB.Tamers["Morulu The Elder"] = {Pets = {}}
-pveDB.Tamers["Morulu The Elder"].Pets["Chomps"]					= {Name = "Chomps",				Level = 23, Quality = 3, Breed = 4, Type = 9}
-pveDB.Tamers["Morulu The Elder"].Pets["Cragmaw"]				= {Name = "Cragmaw",			Level = 23, Quality = 3, Breed = 8, Type = 9}
-pveDB.Tamers["Morulu The Elder"].Pets["Gnasher"]				= {Name = "Gnasher",			Level = 23, Quality = 3, Breed = 4, Type = 9}
-
-pveDB.Tamers["Bloodknight Antari"] = {Pets = {}}
-pveDB.Tamers["Bloodknight Antari"].Pets["Arcanus"]				= {Name = "Arcanus",			Level = 24, Quality = 4, Breed = 3, Type = 6}
-pveDB.Tamers["Bloodknight Antari"].Pets["Jadefire"]				= {Name = "Jadefire",			Level = 24, Quality = 4, Breed = 7, Type = 7}
-pveDB.Tamers["Bloodknight Antari"].Pets["Netherbite"]			= {Name = "Netherbite",			Level = 24, Quality = 4, Breed = 8, Type = 2}
-
--- - ~Northrend Tamers~2
-
-pveDB.Tamers["Beegle Blastfuse"] = {Pets = {}}
-pveDB.Tamers["Beegle Blastfuse"].Pets["Dinner"]					= {Name = "Dinner",				Level = 25, Quality = 4, Breed = 8, Type = 3}
-pveDB.Tamers["Beegle Blastfuse"].Pets["Goobles"]				= {Name = "Goobles",			Level = 25, Quality = 4, Breed = 9, Type = 3}
-pveDB.Tamers["Beegle Blastfuse"].Pets["Warble"]					= {Name = "Warble",				Level = 25, Quality = 4, Breed = 3, Type = 9}
-
-pveDB.Tamers["Nearly Headless Jacob"] = {Pets = {}}
-pveDB.Tamers["Nearly Headless Jacob"].Pets["Spooky Strangler"]	= {Name = "Spooky Strangler",	Level = 25, Quality = 4, Breed = 8, Type = 4}
-pveDB.Tamers["Nearly Headless Jacob"].Pets["Mort"]				= {Name = "Mort",				Level = 25, Quality = 4, Breed = 7, Type = 4}
-pveDB.Tamers["Nearly Headless Jacob"].Pets["Stitch"]			= {Name = "Stitch",				Level = 25, Quality = 4, Breed = 9, Type = 4}
-
-pveDB.Tamers["Okrut Dragonwaste"] = {Pets = {}}
-pveDB.Tamers["Okrut Dragonwaste"].Pets["Drogar"]				= {Name = "Drogar",				Level = 25, Quality = 4, Breed = 8, Type = 2}
-pveDB.Tamers["Okrut Dragonwaste"].Pets["Rot"]					= {Name = "Rot",				Level = 25, Quality = 4, Breed = 7, Type = 4}
-pveDB.Tamers["Okrut Dragonwaste"].Pets["Sleet"]					= {Name = "Sleet",				Level = 25, Quality = 4, Breed = 9, Type = 4}
-
-pveDB.Tamers["Gutretch"] = {Pets = {}}
-pveDB.Tamers["Gutretch"].Pets["Blight"]							= {Name = "Blight",				Level = 25, Quality = 4, Breed = 8, Type = 5}
-pveDB.Tamers["Gutretch"].Pets["Cadavus"]						= {Name = "Cadavus",			Level = 25, Quality = 4, Breed = 7, Type = 8}
-pveDB.Tamers["Gutretch"].Pets["Fleshrender"]					= {Name = "Fleshrender",		Level = 25, Quality = 4, Breed = 6, Type = 8}
-
-pveDB.Tamers["Major Payne"] = {Pets = {}}
-pveDB.Tamers["Major Payne"].Pets["Beakmaster X-225"]			= {Name = "Beakmaster X-225",	Level = 25, Quality = 4, Breed = 8, Type = 10}
-pveDB.Tamers["Major Payne"].Pets["Bloom"]						= {Name = "Bloom",				Level = 25, Quality = 4, Breed = 9, Type = 7}
-pveDB.Tamers["Major Payne"].Pets["Grizzle"]						= {Name = "Grizzle",			Level = 25, Quality = 4, Breed = 6, Type = 8}
-
--- - ~Cataclysm Tamers
-pveDB.Tamers["Brok"] = {Pets = {}}
-pveDB.Tamers["Brok"].Pets["Ashtail"]							= {Name = "Ashtail",			Level = 25, Quality = 4, Breed = 8, Type = 8}
-pveDB.Tamers["Brok"].Pets["Incinderous"]						= {Name = "Incinderous",		Level = 25, Quality = 4, Breed = 6, Type = 5}
-pveDB.Tamers["Brok"].Pets["Kali"]								= {Name = "Kali",				Level = 25, Quality = 4, Breed = 5, Type = 6}
-
-pveDB.Tamers["Bordin Steadyfist"] = {Pets = {}}
-pveDB.Tamers["Bordin Steadyfist"].Pets["Crystallus"]			= {Name = "Crystallus",			Level = 25, Quality = 4, Breed = 9, Type = 5}
-pveDB.Tamers["Bordin Steadyfist"].Pets["Fracture"]				= {Name = "Fracture",			Level = 25, Quality = 4, Breed = 6, Type = 7}
-pveDB.Tamers["Bordin Steadyfist"].Pets["Ruby"]					= {Name = "Ruby",				Level = 25, Quality = 4, Breed = 7, Type = 7}
-
-pveDB.Tamers["Goz Banefury"] = {Pets = {}}
-pveDB.Tamers["Goz Banefury"].Pets["Amythel"]					= {Name = "Amythel",			Level = 25, Quality = 4, Breed = 9, Type = 6}
-pveDB.Tamers["Goz Banefury"].Pets["Helios"]						= {Name = "Helios",				Level = 25, Quality = 4, Breed = 4, Type = 8}
-pveDB.Tamers["Goz Banefury"].Pets["Twilight"]					= {Name = "Twilight",			Level = 25, Quality = 4, Breed = 8, Type = 7}
-
-pveDB.Tamers["Obalis"] = {Pets = {}}
-pveDB.Tamers["Obalis"].Pets["Clatter"]							= {Name = "Clatter",			Level = 25, Quality = 5, Breed = 9, Type = 5}
-pveDB.Tamers["Obalis"].Pets["Spring"]							= {Name = "Spring",				Level = 25, Quality = 5, Breed = 5, Type = 3}
-pveDB.Tamers["Obalis"].Pets["Pyth"]								= {Name = "Pyth",				Level = 25, Quality = 5, Breed = 8, Type = 8}
-
--- - ~Pandaria Tamers~2
-
-pveDB.Tamers["Hyuna of the Shrines"] = {Pets = {}}
-pveDB.Tamers["Hyuna of the Shrines"].Pets["Skyshaper"]					= {Name = "Skyshaper",			Level = 25, Quality = 5, Breed = 8, Type = 3}
-pveDB.Tamers["Hyuna of the Shrines"].Pets["Dor the Wall"]				= {Name = "Dor the Wall",		Level = 25, Quality = 5, Breed = 6, Type = 9}
-pveDB.Tamers["Hyuna of the Shrines"].Pets["Fangor"]						= {Name = "Fangor",				Level = 25, Quality = 5, Breed = 5, Type = 8}
-
-pveDB.Tamers["Farmer Nishi"] = {Pets = {}}
-pveDB.Tamers["Farmer Nishi"].Pets["Brood of Mothallus"]					= {Name = "Brood of Mothallus",			Level = 25, Quality = 5, Breed = 9, Type = 8}
-pveDB.Tamers["Farmer Nishi"].Pets["Toothbreaker"]						= {Name = "Toothbreaker",				Level = 25, Quality = 5, Breed = 6, Type = 7}
-pveDB.Tamers["Farmer Nishi"].Pets["Siren"]								= {Name = "Siren",						Level = 25, Quality = 5, Breed = 7, Type = 7}
-
-
-pveDB.Tamers["Mo'ruk"] = {Pets = {}}
-pveDB.Tamers["Mo'ruk"].Pets["Lightstalker"]							= {Name = "Lightstalker",			Level = 25, Quality = 5, Breed = 8, Type = 3}
-pveDB.Tamers["Mo'ruk"].Pets["Needleback"]							= {Name = "Needleback",				Level = 25, Quality = 5, Breed = 6, Type = 9}
-pveDB.Tamers["Mo'ruk"].Pets["Woodcarver"]							= {Name = "Woodcarver",				Level = 25, Quality = 5, Breed = 9, Type = 8}
-
-pveDB.Tamers["Courageous Yon"] = {Pets = {}}
-pveDB.Tamers["Courageous Yon"].Pets["Bleat"]						= {Name = "Bleat",					Level = 25, Quality = 5, Breed = 8, Type = 8}
-pveDB.Tamers["Courageous Yon"].Pets["Piqua"]						= {Name = "Piqua",					Level = 25, Quality = 5, Breed = 9, Type = 3}
-pveDB.Tamers["Courageous Yon"].Pets["Lapin"]						= {Name = "Lapin",					Level = 25, Quality = 5, Breed = 9, Type = 5}
-
-pveDB.Tamers["Seeker Zusshi"] = {Pets = {}}
-pveDB.Tamers["Seeker Zusshi"].Pets["Diamond"]						= {Name = "Diamond",				Level = 25, Quality = 5, Breed = 6, Type = 7}
-pveDB.Tamers["Seeker Zusshi"].Pets["Mollus"]						= {Name = "Mollus",					Level = 25, Quality = 5, Breed = 9, Type = 5}
-pveDB.Tamers["Seeker Zusshi"].Pets["Skimmer"]						= {Name = "Skimmer",				Level = 25, Quality = 5, Breed = 9, Type = 9}
-
-pveDB.Tamers["Wastewalker Shu"] = {Pets = {}}
-pveDB.Tamers["Wastewalker Shu"].Pets["Pounder"]						= {Name = "Pounder",				Level = 25, Quality = 5, Breed = 6, Type = 7}
-pveDB.Tamers["Wastewalker Shu"].Pets["Crusher"]						= {Name = "Crusher",				Level = 25, Quality = 5, Breed = 7, Type = 9}
-pveDB.Tamers["Wastewalker Shu"].Pets["Mutilator"]					= {Name = "Mutilator",				Level = 25, Quality = 5, Breed = 4, Type = 8}
-
-pveDB.Tamers["Aki the Chosen"] = {Pets = {}}
-pveDB.Tamers["Aki the Chosen"].Pets["Stormlash"]					= {Name = "Stormlash",				Level = 25, Quality = 6, Breed = 7, Type = 2}
-pveDB.Tamers["Aki the Chosen"].Pets["Whiskers"]						= {Name = "Whiskers",				Level = 25, Quality = 6, Breed = 8, Type = 9}
-pveDB.Tamers["Aki the Chosen"].Pets["Chirrup"]						= {Name = "Chirrup",				Level = 25, Quality = 6, Breed = 5, Type = 5}
-
--- _ ~Pandaren Elemental Spirits~2
-pveDB.Tamers["Burning Pandaren Spirit"] = {Pets = {}}
-pveDB.Tamers["Burning Pandaren Spirit"].Pets["Crimson"]						= {Name = "Crimson",				Level = 25, Quality = 6, Breed = 8, Type = 2}
-pveDB.Tamers["Burning Pandaren Spirit"].Pets["Glowy"]						= {Name = "Glowy",					Level = 25, Quality = 6, Breed = 11, Type = 3}
-pveDB.Tamers["Burning Pandaren Spirit"].Pets["Pandaren Fire Spirit"]		= {Name = "Pandaren Fire Spirit",	Level = 25, Quality = 6, Breed = 8, Type = 7}
-
-pveDB.Tamers["Thundering Pandaren Spirit"] = {Pets = {}}
-pveDB.Tamers["Thundering Pandaren Spirit"].Pets["Darnak the Tunneler"]		= {Name = "Darnak the Tunneler",	Level = 25, Quality = 6, Breed = 6, Type = 8}
-pveDB.Tamers["Thundering Pandaren Spirit"].Pets["Pandaren Earth Spirit"]	= {Name = "Pandaren Earth Spirit",	Level = 25, Quality = 6, Breed = 7, Type = 7}
-pveDB.Tamers["Thundering Pandaren Spirit"].Pets["Sludgy"]					= {Name = "Sludgy",					Level = 25, Quality = 6, Breed = 9, Type = 6}
-
-pveDB.Tamers["Whispering Pandaren Spirit"] = {Pets = {}}
-pveDB.Tamers["Whispering Pandaren Spirit"].Pets["Dusty"]					= {Name = "Dusty",					Level = 25, Quality = 6, Breed = 12, Type = 3}
-pveDB.Tamers["Whispering Pandaren Spirit"].Pets["Pandaren Air Spirit"]		= {Name = "Pandaren Air Spirit",	Level = 25, Quality = 6, Breed = 3, Type = 7}
-pveDB.Tamers["Whispering Pandaren Spirit"].Pets["Whispertail"]				= {Name = "Whispertail",			Level = 25, Quality = 6, Breed = 3, Type = 2}
-
-pveDB.Tamers["Flowing Pandaren Spirit"] = {Pets = {}}
-pveDB.Tamers["Flowing Pandaren Spirit"].Pets["Marley"]						= {Name = "Marley",					Level = 25, Quality = 6, Breed = 5, Type = 9}
-pveDB.Tamers["Flowing Pandaren Spirit"].Pets["Pandaren Water Spirit"]		= {Name = "Pandaren Water Spirit",	Level = 25, Quality = 6, Breed = 9, Type = 7}
-pveDB.Tamers["Flowing Pandaren Spirit"].Pets["Tiptoe"]						= {Name = "Tiptoe",					Level = 25, Quality = 6, Breed = 10, Type = 9}
-
-
--- _ ~Darkmoon Faire
-
-pveDB.Tamers["Jeremy Feasel"] = {Pets = {}}
-pveDB.Tamers["Jeremy Feasel"].Pets["Honky-Tonk"]						= {Name = "Honky-Tonk",				Level = 25, Quality = 5, Breed = 7, Type = 10}
-pveDB.Tamers["Jeremy Feasel"].Pets["Judgement"]						= {Name = "Judgement",				Level = 25, Quality = 5, Breed = 8, Type = 6}
-pveDB.Tamers["Jeremy Feasel"].Pets["Fezwick"]					= {Name = "Fezwick",				Level = 25, Quality = 5, Breed = 10, Type = 8}
-
-
--- _ ~Fabled Pandaren~2
-
-pveDB.Elites["Ka'wi the Gorger"] = {Pets = {}}
-pveDB.Elites["Ka'wi the Gorger"].Pets["Ka'wi the Gorger"]			= {Name = "Ka'wi the Gorger",		Level = 25, Quality = 6, Breed = 7, Type = 5}
-
-pveDB.Elites["Gorespine"] = {Pets = {}}
-pveDB.Elites["Gorespine"].Pets["Gorespine"]							= {Name = "Gorespine",				Level = 25, Quality = 6, Breed = 4, Type = 8}
-
-pveDB.Elites["No-No"] = {Pets = {}}
-pveDB.Elites["No-No"].Pets["No-No"]									= {Name = "No-No",					Level = 25, Quality = 6, Breed = 3, Type = 9}
-
-pveDB.Elites["Greyhoof"] = {Pets = {}}
-pveDB.Elites["Greyhoof"].Pets["Greyhoof"]							= {Name = "Greyhoof",				Level = 25, Quality = 6, Breed = 9, Type = 8}
-
-pveDB.Elites["Lucky Yi"] = {Pets = {}}
-pveDB.Elites["Lucky Yi"].Pets["Lucky Yi"]							= {Name = "Lucky Yi ",				Level = 25, Quality = 6, Breed = 11, Type = 5}
-
-pveDB.Elites["Ti'un the Wanderer"] = {Pets = {}}
-pveDB.Elites["Ti'un the Wanderer"].Pets["Ti'un the Wanderer"]		= {Name = "Ti'un the Wanderer",		Level = 25, Quality = 6, Breed = 6, Type = 9}
-
-pveDB.Elites["Kafi"] = {Pets = {}}
-pveDB.Elites["Kafi"].Pets["Kafi"]									= {Name = "Kafi",					Level = 25, Quality = 6, Breed = 10, Type = 8}
-
-pveDB.Elites["Dos-Ryga"] = {Pets = {}}
-pveDB.Elites["Dos-Ryga"].Pets["Dos-Ryga"]							= {Name = "Dos-Ryga",				Level = 25, Quality = 6, Breed = 12, Type = 9}
-
-pveDB.Elites["Nitun"] = {Pets = {}}
-pveDB.Elites["Nitun"].Pets["Nitun"]									= {Name = "Nitun",					Level = 25, Quality = 6, Breed = 8, Type = 5}
-
-pveDB.Elites["Skitterer Xi'a"] = {Pets = {}}
-pveDB.Elites["Skitterer Xi'a"].Pets["Skitterer Xi'a"]				= {Name = "Skitterer Xi'a",			Level = 25, Quality = 6, Breed = 5, Type = 9}
-
-pveDB.Elites["Skitterer Xi'a"] = {Pets = {}}
-pveDB.Elites["Skitterer Xi'a"].Pets["Skitterer Xi'a"]				= {Name = "Skitterer Xi'a",			Level = 25, Quality = 6, Breed = 5, Type = 9}
-
-
--- _ ~Timeless Isle Celestial Tournament~2
-
-pveDB.Tamers["Little Tommy Newcomer"] = {Pets = {}}
-pveDB.Tamers["Little Tommy Newcomer"].Pets["Lil' Oondasta"]		= {Name = "Lil' Oondasta",		Level = 25, Quality = 6, Breed = 3, Type = 8}
-
-
-pveDB.Tamers["Lorewalker Cho"] = {Pets = {}}
-pveDB.Tamers["Lorewalker Cho"].Pets["Knowledge"]				= {Name = "Knowledge",	Level = 25, Quality = 6, Breed = 4, Type = 2}
-pveDB.Tamers["Lorewalker Cho"].Pets["Patience"]					= {Name = "Patience",	Level = 25, Quality = 6, Breed = 6, Type = 6}
-pveDB.Tamers["Lorewalker Cho"].Pets["Wisdom"]					= {Name = "Wisdom",		Level = 25, Quality = 6, Breed = 5, Type = 3}
-
-pveDB.Tamers["Shademaster Kiryn"] = {Pets = {}}
-pveDB.Tamers["Shademaster Kiryn"].Pets["Summer"]				= {Name = "Summer",		Level = 25, Quality = 6, Breed = 5, Type = 8}
-pveDB.Tamers["Shademaster Kiryn"].Pets["Nairn"]					= {Name = "Nairn",		Level = 25, Quality = 6, Breed = 6, Type = 1}
-pveDB.Tamers["Shademaster Kiryn"].Pets["Stormoen"]				= {Name = "Stormoen",	Level = 25, Quality = 6, Breed = 4, Type = 10}
-
-pveDB.Tamers["Sully \"The Pickle\" McLeary"] = {Pets = {}}
-pveDB.Tamers["Sully \"The Pickle\" McLeary"].Pets["Monte"]		= {Name = "Monte",		Level = 25, Quality = 6, Breed = 4, Type = 5}
-pveDB.Tamers["Sully \"The Pickle\" McLeary"].Pets["Rikki"]		= {Name = "Rikki",		Level = 25, Quality = 6, Breed = 3, Type = 9}
-pveDB.Tamers["Sully \"The Pickle\" McLeary"].Pets["Socks"]		= {Name = "Socks",		Level = 25, Quality = 6, Breed = 3, Type = 4}
-
-pveDB.Tamers["Taran Zhu"] = {Pets = {}}
-pveDB.Tamers["Taran Zhu"].Pets["Bolo"]							= {Name = "Bolo",		Level = 25, Quality = 6, Breed = 7, Type = 1}
-pveDB.Tamers["Taran Zhu"].Pets["Li"]							= {Name = "Li",			Level = 25, Quality = 6, Breed = 5, Type = 1}
-pveDB.Tamers["Taran Zhu"].Pets["Yen"]							= {Name = "Yen",		Level = 25, Quality = 6, Breed = 8, Type = 1}
-
-pveDB.Tamers["Blingtron 4000"] = {Pets = {}}
-pveDB.Tamers["Blingtron 4000"].Pets["Au"]						= {Name = "Au",			Level = 25, Quality = 6, Breed = 4, Type = 7}
-pveDB.Tamers["Blingtron 4000"].Pets["Banks"]					= {Name = "Banks",		Level = 25, Quality = 6, Breed = 6, Type = 5}
-pveDB.Tamers["Blingtron 4000"].Pets["Lil' B"]					= {Name = "Lil' B",		Level = 25, Quality = 6, Breed = 5, Type = 6}
-
-pveDB.Tamers["Dr. Ion Goldbloom"] = {Pets = {}}
-pveDB.Tamers["Dr. Ion Goldbloom"].Pets["Chaos"]					= {Name = "Chaos",		Level = 25, Quality = 6, Breed = 5, Type = 6}
-pveDB.Tamers["Dr. Ion Goldbloom"].Pets["Trike"]					= {Name = "Trike",		Level = 25, Quality = 6, Breed = 6, Type = 8}
-pveDB.Tamers["Dr. Ion Goldbloom"].Pets["Screamer"]				= {Name = "Screamer",	Level = 25, Quality = 6, Breed = 4, Type = 3}
-
-pveDB.Tamers["Wise Mari"] = {Pets = {}}
-pveDB.Tamers["Wise Mari"].Pets["River"]							= {Name = "River",		Level = 25, Quality = 6, Breed = 5, Type = 7}
-pveDB.Tamers["Wise Mari"].Pets["Carpe Diem"]					= {Name = "Carpe Diem",	Level = 25, Quality = 6, Breed = 6, Type = 9}
-pveDB.Tamers["Wise Mari"].Pets["Spirus"]						= {Name = "Spirus",		Level = 25, Quality = 6, Breed = 4, Type = 6}
-
-pveDB.Tamers["Chen Stormstout"] = {Pets = {}}
-pveDB.Tamers["Chen Stormstout"].Pets["Tonsa"]					= {Name = "Tonsa",		Level = 25, Quality = 6, Breed = 8, Type = 8}
-pveDB.Tamers["Chen Stormstout"].Pets["Chirps"]					= {Name = "Chirps",		Level = 25, Quality = 6, Breed = 5, Type = 5}
-pveDB.Tamers["Chen Stormstout"].Pets["Brewly"]					= {Name = "Brewly",		Level = 25, Quality = 6, Breed = 6, Type = 7}
-
-pveDB.Tamers["Wrathion"] = {Pets = {}}
-pveDB.Tamers["Wrathion"].Pets["Cindy"]							= {Name = "Cindy",		Level = 25, Quality = 6, Breed = 5, Type = 4}
-pveDB.Tamers["Wrathion"].Pets["Alex"]							= {Name = "Alex",		Level = 25, Quality = 6, Breed = 6, Type = 2}
-pveDB.Tamers["Wrathion"].Pets["Dah'da"]							= {Name = "Dah'da",		Level = 25, Quality = 6, Breed = 4, Type = 2}
-
-
-pveDB.Elites["Chi-Chi, Hatchling of Chi-Ji"] = {Pets = {}}
-pveDB.Elites["Chi-Chi, Hatchling of Chi-Ji"].Pets["Chi-Chi, Hatchling of Chi-Ji"]	= {Name = "Chi-Chi, Hatchling of Chi-Ji",		Level = 25, Quality = 6, Breed = 8, Type = 3}
-
-pveDB.Elites["Xu-Fu, Cub of Xuen"] = {Pets = {}}
-pveDB.Elites["Xu-Fu, Cub of Xuen"].Pets["Xu-Fu, Cub of Xuen"]						= {Name = "Xu-Fu, Cub of Xuen",					Level = 25, Quality = 6, Breed = 8, Type = 8}
-
-pveDB.Elites["Yu'la, Broodling of Yu'lon"] = {Pets = {}}
-pveDB.Elites["Yu'la, Broodling of Yu'lon"].Pets["Yu'la, Broodling of Yu'lon"]		= {Name = "Yu'la, Broodling of Yu'lon",			Level = 25, Quality = 6, Breed = 8, Type = 2}
-
-pveDB.Elites["Zao, Calfling of Niuzao"] = {Pets = {}}
-pveDB.Elites["Zao, Calfling of Niuzao"].Pets["Zao, Calfling of Niuzao"]				= {Name = "Zao, Calfling of Niuzao ",			Level = 25, Quality = 6, Breed = 6, Type = 8}
-
- 
-
 
 --This function is supposed to take the client strings for the pet battle combat log,
 --and make patterns that can be used to get information use they are used in the log.
@@ -478,6 +102,7 @@ function PetBattlePokemonMusic:makePattern(str)
 end
 
 -- A prototype function for making pattern matching strings for each localization.
+--TODO:  This might be an unused function.
 function PetBattlePokemonMusic:createLocalizedPatterns()
 	damagePattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_DAMAGE)
 	missPattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_MISS)
@@ -489,63 +114,29 @@ function PetBattlePokemonMusic:createLocalizedPatterns()
 	weatherFadePattern = PetBattlePokemonMusic:makePattern(PET_BATTLE_COMBAT_LOG_WEATHER_AURA_FADES)
 end
 
--- English pattern matching strings.  TODO
---Damaged
-local BPAPatternDealtYour = "(.*) dealt %d* damage to your (.*)%."
-local BPAPatternDealtEnemy = "(.*) dealt %d* damage to enemy (.*)%."
---Damaged Critical
-local BPAPatternDealtYourCrit = "(.*) dealt %d* damage to your (.*) %(Critical%)%."
-local BPAPatternDealtEnemyCrit = "(.*) dealt %d* damage to enemy (.*) %(Critical%)%."
---Damaged Strong
-local BPAPatternDealtYourStrong = "(.*) dealt %d* damage to your INTERFACE\\.*\\.*.%BLP:14.* %(Strong%)%."
-local BPAPatternDealtEnemyStrong = "(.*) dealt %d* damage to enemy INTERFACE\\.*\\.*.%BLP:14.* %(Strong%)%."
---Damaged Weak
-local BPAPatternDealtYourWeak = "(.*) dealt %d* damage to your (.*) %(Weak%)%."
-local BPAPatternDealtEnemyWeak = "(.*) dealt %d* damage to enemy (.*) %(Weak%)%."
---Dodged
-local BPAPatternYourDodged = "(.*) was dodged by your (.*)%."
-local BPAPatternEnemyDodged = "(.*) was dodged by enemy (.*)%."
---Faded
-local BPAPatternYourFade = "(.*) fades from your (.*)%."
-local BPAPatternEnemyFade = "(.*) fades from enemy (.*)%."
---Applied
-local BPAPatternYourApp = "(.*) applied (.*) to your (.*)%."
-local BPAPatternEnemyApp = "(.*) applied (.*) to enemy (.*)%."
---Miss
-local BPAPatternYourMiss = "(.*) missed your (.*)%."
-local BPAPatternEnemyMiss = "(.*) missed enemy (.*)%."
---Heals
-local BPAPatternHealYour = "(.*) healed %d* damage from your (.*)%."
-local BPAPatternHealEnemy = "(.*) healed %d* damage from enemy (.*)%."
---Weather Change:  Not complete
-local weatherIn = "(.*) changed the weather to (.*)%."
-local weatherOut ="(.*) is no longer the weather%."
 
-local BPLevelUpPattern = "(.*) has reached level %d*!"
-
-local block = " was blocked from striking "
 
 local SoundListUI = {}
 local SoundListUIKeys = {}
 local testersd = 0;
 
 local spellIDs = {}
-spellIDs[134644]= 1
-spellIDs[134496]= 1
-spellIDs[134482]= 1
-spellIDs[134490]= 1
-spellIDs[134488]= 1
-spellIDs[134484]= 1
-spellIDs[134486]= 1
-spellIDs[134487]= 1
-spellIDs[134492]= 1
-spellIDs[134489]= 1
-spellIDs[134448]= 1
-spellIDs[134491]= 1
-spellIDs[125801]= 1
-spellIDs[133994]= 1
-spellIDs[142205]= 1
-spellIDs[142204]= 1
+	spellIDs[134644]= 1
+	spellIDs[134496]= 1
+	spellIDs[134482]= 1
+	spellIDs[134490]= 1
+	spellIDs[134488]= 1
+	spellIDs[134484]= 1
+	spellIDs[134486]= 1
+	spellIDs[134487]= 1
+	spellIDs[134492]= 1
+	spellIDs[134489]= 1
+	spellIDs[134448]= 1
+	spellIDs[134491]= 1
+	spellIDs[125801]= 1
+	spellIDs[133994]= 1
+	spellIDs[142205]= 1
+	spellIDs[142204]= 1
 --- This is a table of strings that are used for UI elements and cannot be used for sound names.
 local unusableSoundNames = {}
 	unusableSoundNames["AddNewSoundHeader"]		= true
@@ -716,7 +307,12 @@ local main = {
 							type = "execute",
 							name = L["ADDON_RESET"],
 							func = function () PetBattlePokemonMusic:Reset() end
-						},
+		},
+		scanTeamButton = {
+							type = "execute",
+							name ="SCAN",
+							func = function ()PetBattlePokemonMusic:CreateTamerIdentifierData() end
+		},
 		TrainerCustom = {
 							order		=	8,
 							type		= "description",
@@ -1629,23 +1225,7 @@ function PetBattlePokemonMusic:SetUpAbilities()
 	end
 end
 
-function PetBattlePokemonMusic:DetermineBattleType ()
 
-	if C_PetBattles.IsWildBattle() == true then
-	
-		--local petname, speciesname = C_PetBattles.GetName(2, 1)
-		return L["WILD"] 
-	else
-		if C_PetBattles.IsPlayerNPC(2) == true then
-			--Tamer
-			return L["TAMER"]
-		else
-			return "PvP"
-		end
-
-	end
-
-end
 -- ======================================================================================
 -- New Music Setting Panel
 -- ======================================================================================
@@ -1918,10 +1498,20 @@ PetBattlePokemonMusic:FillPlaylistList() return PlaylistList end,
 																							get			=	function () return PetBattlePokemonMusic.db.global.PvP.Always end
 																	},
 			GlobalPvPMusicType = {
-									type = "select", name = L["NEW_MUSIC_SELECT_MUSIC_TYPE"], values = MusicTypes, width = "full",
-									get = function ()PetBattlePokemonMusic:UpdatePvPHidden (PetBattlePokemonMusic.db.global.PvP.MusicType) return  PetBattlePokemonMusic.db.global.PvP.MusicType  end, 
-									set = function (info, val)PetBattlePokemonMusic.db.global.PvP.MusicType = val  PetBattlePokemonMusic:UpdatePvPHidden (val) end,
-				order = 5},
+									type	= "select",
+									name	= L["NEW_MUSIC_SELECT_MUSIC_TYPE"], 
+									values	= MusicTypes, 
+									width	= "full",
+									get		= function ()			
+													PetBattlePokemonMusic:UpdatePvPHidden (PetBattlePokemonMusic.db.global.PvP.MusicType) 
+													return  PetBattlePokemonMusic.db.global.PvP.MusicType  
+											  end, 
+									set		= function (info, val)	
+													PetBattlePokemonMusic.db.global.PvP.MusicType = val  
+													PetBattlePokemonMusic:UpdatePvPHidden (val) 
+											  end,
+									order	= 5
+			},
 			GlobalPvPMusicVolume = {	type = "range",
 										name = L["NEW_MUSIC_SELECT_MUSIC_VOLUME"],
 										min  = 0,
@@ -1950,7 +1540,13 @@ PetBattlePokemonMusic:FillPlaylistList() return PlaylistList end,
 																								end
 																							end,
 										order = 4},
-	AddPvPText = {type = "input", get = function() return pvpNewName end, set = function (info, val) pvpNewName = val end, name = L["NEW_MUSIC_SELECT_NEW_PVP_SPEC"], order = 10 },
+	AddPvPText = {	type = "input", 
+					get = function() 
+							return pvpNewName 
+					end, 
+					set = function (info, val) pvpNewName = val end, 
+					name = L["NEW_MUSIC_SELECT_NEW_PVP_SPEC"], 
+					order = 10 },
 AddPvPTextButton = {type = "execute",func = function () if PetBattlePokemonMusic.db.global.PvPTracks[pvpNewName] == nil then  PetBattlePokemonMusic:AddNewPvPTrack(pvpNewName)  PetBattlePokemonMusic:AddSpecificPvPUI(pvpNewName)  pvpNewName = "" end end, name = L["BP_SOUNDS_ADD"], order = 11  }
 
 } }
@@ -3108,7 +2704,8 @@ function PetBattlePokemonMusic:AddNewTamerTrack(tamerName)
 																Victory = {}}
 end
 function PetBattlePokemonMusic:FillSpecificTamersDB ()
-	for k, v in pairs (pveDB.Tamers) do
+	--TODO may want to use a temporary table here.
+	for k, v in pairs (PetBattlePokemonMusic:GetpveDB().Tamers) do
 		if PetBattlePokemonMusic.db.global.TamerTracks[k] == nil then
 			PetBattlePokemonMusic:AddNewTamerTrack(k)
 		end
@@ -3255,22 +2852,7 @@ local PBPMMods = {
 		args = {}
 	
 }
---PvP player name detection method 1
-local duelistName = ""
-function PetBattlePokemonMusic:DuelCheck(a1, a2)
-	if a1 ~= nil then
-		if a1.value ~= nil then
-			if strmatch( a1.value, "PET_BATTLE_PVP_DUEL") ~= nil then
-				name, realm = UnitName("target")
-				if realm == nil then
-					realm = GetRealmName()
-				end
-				duelistName = name.."-"..realm
-			end
-		end
-	end
-	
-end
+
 
 function PetBattlePokemonMusic:OnInitialize()
 
@@ -3381,12 +2963,7 @@ function PetBattlePokemonMusic:OnInitialize()
 
 end
 
-function PetBattlePokemonMusic:UI_ERROR_MESSAGE(event, message)
-	if strmatch( message, "ERR_PETBATTLE_DECLINED") then
-		--Erase the playerTamer name in pending.
-		duelistName = ""
-	end
-end
+
 
 function PetBattlePokemonMusic:OnEnable()
 
@@ -3408,237 +2985,8 @@ function PetBattlePokemonMusic:Reset()
 	PetBattlePokemonMusic.db.global.RegisteredMods = {}
 end
 
-function PetBattlePokemonMusic:GetTamerName ()
-
-	local Pets = {}
-	for i = 1, C_PetBattles.GetNumPets(2) do
-		Pets[C_PetBattles.GetName(2,i)] = {	Name = C_PetBattles.GetName(2,i),
-											Level = C_PetBattles.GetLevel(2,i), 
-											Quality =  C_PetBattles.GetBreedQuality(2,i) }
-	end
-	for key,val in pairs (pveDB.Tamers) do
-	local	matches = PetBattlePokemonMusic:TableSize(pveDB.Tamers[key].Pets)
-		
-		for petName, patData in pairs (Pets) do
-			if pveDB.Tamers[key].Pets[petName] ~= nil then
-				if Pets[petName].Level == pveDB.Tamers[key].Pets[petName].Level and Pets[petName].Quality == pveDB.Tamers[key].Pets[petName].Quality then
-				
-				
-					matches = matches -1
-
-				end
-			end
-		end
-		if matches == 0 then
-			return key
-		end
-	end
-	return L["UNKNOWN"]
 
 
-end
----
---
---@param event The name of the event.
---@param
-function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_INFO(event, ...)
-
-end
-function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_COMBAT_LOG(...)
-	demo = {...}
-	
-	str = ""
-	--Basic Damage Dealing  INTERFACE\\.*\\.*.%BLP:14|
-	--print(strfind((demo[2]),"INTERFACE\\.*\\.*.%BLP:14|"))
-	w,ty = strfind((demo[2]),"HbattlePetAbil:(%d*):%d*:%d*:%d*|h%[.*%]|h|r")
-	local  rere = L["PERT"] (demo[2])
-	
-	if ty ~= nil then
-		rwr , qwe= strfind((strsub((demo[2]),1,ty)),"INTERFACE\\.*\\.*.%BLP:14.*")
-	end
-
-	--Test for localization
-
---	local damagePattern = ""
---local missPattern = ""
---local dodgePattern =""
---local healedPattern = ""
---local auraAppliedPattern = ""
---local auraFadesPattern = ""
---local weatherChangePattern = ""
---local weatherFadePattern = ""
-	
-	remake = PET_BATTLE_COMBAT_LOG_DAMAGE;
-	remake = string.gsub(remake, " %%s ", " (%%a*) ")
-	remake = string.gsub(remake, "%%s", "(.*)")
-	remake = string.gsub(remake, "%%d", "%(%%d%*%)")
-	remake = string.gsub(remake, "%)%.", "%)%%.")
---	print("Remake: "..remake);
-	
-	-- ================================================================================================================================================================================= --
-	--   Damage
-	-- ================================================================================================================================================================================= --
-	if rere == nil then
-		return false
-	end
---"Damage Yours"
-if rere.Type == "Damage Yours" then
-	d, rqw, qrr = strfind(rere.Ability,BPApattern)
-	--print(qrr)
-	if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-		if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-			PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-		end
-	end
-end
-if rere.Type == "Damage Enemy" then
-	d, rqw, qrr = strfind(rere.Ability,BPApattern)
-	--print(qrr)
-	if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-		if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-			PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-		end
-	end
-end
-
-
-	-- ================================================================================================================================================================================= --
-	--MISSED
-	-- ================================================================================================================================================================================= --
-	if strfind(demo[2],BPAPatternYourMiss  ) ~= nil then
-		e1, e2, goal,g2 = strfind(demo[2],BPAPatternYourMiss )
-		e1, e2, goal, g2 = strfind(demo[2],BPAPatternYourMiss )
-		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File].FileName,"Master")
-				end
-			end
-	end
-	if strfind(demo[2],BPAPatternEnemyMiss  ) ~= nil then
-		e1, e2, goal,g2 = strfind(demo[2],BPAPatternEnemyMiss )
-		e1, e2, goal, g2 = strfind(demo[2],BPAPatternEnemyMiss )
-		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File].FileName,"Master")
-				end
-			end
-	end	
-	-- ================================================================================================================================================================================= --
-	--HEALED
-	-- ================================================================================================================================================================================= --
-	if strfind(tostring(demo[2]),BPAPatternHealYour) ~= nil then
-		e1, e2, goal = strfind(demo[2],BPAPatternHealYour)
-		sd, rqw, qrr = strfind(goal,BPApattern)
-
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-				end
-			end
-	end
-	if strfind(demo[2],BPAPatternHealEnemy) ~= nil then
-
-		e1, e2, goal = strfind(demo[2],BPAPatternHealEnemy)
-		e1, e2, goal = strfind(demo[2],BPAPatternHealEnemy)
-		sd, rqw, qrr = strfind(goal,BPApattern)
-
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-				end
-			end
-	end
-	-- ================================================================================================================================================================================= --
-	--Dodge
-	-- ================================================================================================================================================================================= --
-	if strfind(tostring(demo[2]),BPAPatternYourDodged) ~= nil then
-		e1, e2, goal = strfind(demo[2],BPAPatternYourDodged)
-		sd, rqw, qrr = strfind(goal,BPApattern)
-
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-				end
-			end
-	end
-	if strfind(demo[2],BPAPatternEnemyDodged) ~= nil then
-		e1, e2, goal = strfind(demo[2],BPAPatternEnemyDodged)
-		e1, e2, goal = strfind(demo[2],BPAPatternEnemyDodged)
-		sd, rqw, qrr = strfind(goal,BPApattern)
-	
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-				end
-			end
-	end
-	-- ================================================================================================================================================================================= --
-	--- APPLIED
-	-- ================================================================================================================================================================================= --
-	if strfind(demo[2],BPAPatternYourApp ) ~= nil then
-		e1, e2, goal,g2 = strfind(demo[2],BPAPatternYourApp)
-		e1, e2, goal, g2 = strfind(demo[2],BPAPatternYourApp)
-		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File].FileName,"Master")
-				end
-			end
-		
-	end
-	if strfind(demo[2],BPAPatternEnemyApp  ) ~= nil then
-
-		e1, e2, goal,g2 = strfind(demo[2],BPAPatternEnemyApp )
-		e1, e2, goal, g2 = strfind(demo[2],BPAPatternEnemyApp )
-		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
-
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File].FileName,"Master")
-				end
-			end
-	end
-	-- ================================================================================================================================================================================= --
-	--FADE
-	-- ================================================================================================================================================================================= --
-	-- Fades from enemy.
-	if strfind(demo[2],BPAPatternEnemyFade ) ~= nil then
-		e1, e2, goal,g2 = strfind(demo[2],BPAPatternEnemyFade)
-		e1, e2, goal, g2 = strfind(demo[2],BPAPatternEnemyFade)
-		sd, rqw, qrr, a2, a3 = strfind(goal,BPApattern)
-
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File].FileName,"Master")
-				end
-			end
-	end
-	--fade
-	if strfind(demo[2],BPAPatternYourFade  ) ~= nil then
-
-		e1, e2, goal,g2 = strfind(demo[2],BPAPatternYourFade )
-		e1, e2, goal, g2 = strfind(demo[2],BPAPatternYourFade )
-		sd, rqw, qrr, a2, a3 = strfind(goal,BPApattern)
-
-			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File]~= nil then
-					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File].FileName,"Master")
-				end
-			end
-	end
-	iorww = strfind(demo[2],"HbattlePetAbil:")
-	if iorww ~= nil then
-		str = strsub(demo[2],iorww)
-		werer = strfind(strsub(str,16),":")
-		if werer ~= nil then
-		--	print(strsub(strsub(str,16),1,werer-1))
-		end
-	end
-	--"|cff4e96f7|HbattlePetAbil:abilityID:maxHealth:power:speed|h[text]|h|r"
-	--ICON battlePetAbil " dealt " # " damage to enemy " ICON2 EnemyName
-end
 
 -- PLAYLIST FUNCTIONS
 
@@ -3720,50 +3068,7 @@ function PetBattlePokemonMusic:PlaylistStop()
 	
 end
 
-function PetBattlePokemonMusic:PlaylistNext()
-	if PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist] ~= nil then
 
-	self:CancelTimer(PlaylistTimer, true)
-	--PetBattlePokemonMusic.db.global.PlayLists[playlistIndex]
-	--{Tracks = {}, Type = 1, CurrentTrack = 1, PlayedRandom = {}, MissingTracks = {}, RemainingTracks = {}, Continuous = false, UseStart = false, UseVictory = false, StartTrack = 0, VictoryTrack = 0, RandomReuse = 0}
-		if PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].Type == 1 then
-	
-			--Standard
-			if #PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].Tracks > playlistCurrentTrack then
-				playlistCurrentTrack = playlistCurrentTrack + 1
-			else
-				playlistCurrentTrack = 1
-			end
-			local trackID = PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].Tracks[playlistCurrentTrack].track
-			--print(PetBattlePokemonMusic.db.global.SoundLibrary[trackID].FileName)
-			SetCVar("Sound_MusicVolume", baseVol * PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].Tracks[playlistCurrentTrack].Vol )
-			PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[trackID].FileName)
-			PlaylistTimer = self:ScheduleTimer("PlaylistNext", PetBattlePokemonMusic.db.global.SoundLibrary[trackID].Length)
-		else
-			
-		local nextRandom = random(1,  #PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks)
-		playlistCurrentTrack =  PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks[nextRandom]
-		tinsert (PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom, {Track = PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks[nextRandom], Wait = PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RandomReuse})
-		--print("Playing Track: " .. PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks[nextRandom])
-			local trackID = PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].Tracks[PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks[nextRandom]].track
-		SetCVar("Sound_MusicVolume",baseVol * PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].Tracks[PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks[nextRandom]].Vol )
-		PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[trackID].FileName)
-		PlaylistTimer = self:ScheduleTimer("PlaylistNext", PetBattlePokemonMusic.db.global.SoundLibrary[trackID].Length)
-		tremove (PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks, nextRandom)
-
-			for k, v in pairs (PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom) do
-			PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom[k].Wait = PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom[k].Wait - 1
-			
-			
-			--print("On Wait: "..PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom[k].Track.." Wait = "..PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom[k].Wait )
-		end
-		while #PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom > PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RandomReuse do
-			tinsert(PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].RemainingTracks, PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom[1].Track)
-			tremove(PetBattlePokemonMusic.db.global.PlayLists[currentPlaylist].PlayedRandom, 1)
-		end
-		end
-	end
-end
 
 
 
@@ -3794,19 +3099,17 @@ local currentBattlePlaylist = {}
 --
 function PetBattlePokemonMusic:UniversialBattleOpening(name, cbplType, typeName, typeTracks)
 
-		currentBattlePlaylist.Type = cbplType
+	currentBattlePlaylist.Type = cbplType
+
 	if PetBattlePokemonMusic.db.global[typeName].On == false then
 		return false
 	end
-	
 	if PetBattlePokemonMusic.db.global[typeTracks][name] ~= nil then
 		currentBattlePlaylist.Target = name
 		if PetBattlePokemonMusic.db.global[typeTracks][name].Enabled == true then
 			--PetBattlePokemonMusic.db.global[typeTracks][wildName] = {Type = 1, Premade = 1, Custom = 1, Playlist = 1, Enabled =true, Always = true,Volume = {Music = 0.5, Master = 0.5}, Start ={}, Victory = {}}
 			if  PetBattlePokemonMusic.db.global[typeTracks][name].Type == 1 then
 				--Premade
-				
-				
 				if PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade] ~= nil then
 					--print(PetBattlePokemonMusic.db.global[typeTracks][name].Premade)
 					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Music)
@@ -3814,11 +3117,11 @@ function PetBattlePokemonMusic:UniversialBattleOpening(name, cbplType, typeName,
 					if PetBattlePokemonMusic:IsStartEnabled() then
 						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary [ 
 						PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].StartSoundKey ] .FileName, "Master")
-						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
-
-							
-																	PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].MusicKey].FileName) end,
-																	PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].StartSoundKey].Length)
+						battleTimer =	self:ScheduleTimer(function () 
+																	SetCVar("Sound_EnableMusic", 1 )
+																	PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].MusicKey].FileName) 
+															end,
+															PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade].StartSoundKey].Length)
 					else
 						SetCVar("Sound_EnableMusic", 1 )
 						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade]].MusicKey].FileName)
@@ -3827,37 +3130,28 @@ function PetBattlePokemonMusic:UniversialBattleOpening(name, cbplType, typeName,
 			end
 			if  PetBattlePokemonMusic.db.global[typeTracks][name].Type == 2 then
 				--Playlist
-				
 				local playlistKey = PetBattlePokemonMusic.db.global[typeTracks][name].Playlist
 				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Music, PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
 			end
 			if  PetBattlePokemonMusic.db.global[typeTracks][name].Type == 3 then
 				--Custom
 				if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom] ~= nil then
-					
 					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Music *  PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].MusicVol)
 					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
 					if PetBattlePokemonMusic:IsStartEnabled() then
 						SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].StartVol)
 						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary [ 
 						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].StartSoundKey ] .FileName, "Master")
-						--PetBattlePokemonMusic.db.global.CustomTracks[
-						--print(PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeTracks][name].Premade])
-						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
-							SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
-							--PetBattlePokemonMusic.db.global.CustomTracks[trackID].MusicKey
-						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].MusicKey].FileName) 
-end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].StartSoundKey].Length)
+						battleTimer =	self:ScheduleTimer(function () 
+																SetCVar("Sound_EnableMusic", 1 )
+																SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global[typeTracks][name].Volume.Master)
+																PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].MusicKey].FileName) 
+														    end,
+															PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].StartSoundKey].Length)
 					else
 						SetCVar("Sound_EnableMusic", 1 )
 						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeTracks][name].Custom].MusicKey].FileName) 
-					
 					end
-			--		if PetBattlePokemonMusic.db.global[typeName].Custom == false then
-		--		PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
-	--		else
-	--			PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
---			end
 				end
 			end
 		else
@@ -3873,7 +3167,6 @@ end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global
 			--									PlaylistSelected = 1
 
 			if  PetBattlePokemonMusic.db.global[typeName].MusicType == 2 then
-				
 				local playlistKey = PetBattlePokemonMusic.db.global[typeName].Track
 				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music , PetBattlePokemonMusic.db.global[typeName].Volume.Master)
 			end
@@ -3884,7 +3177,6 @@ end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global
 					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
 					
 					if PetBattlePokemonMusic:IsStartEnabled() then
-
 						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
 						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
 						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end,PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
@@ -3893,10 +3185,7 @@ end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global
 						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
 					end
 				end
-
 			end
-			
-			
 			if  PetBattlePokemonMusic.db.global[typeName].MusicType == 3 then
 				--Custom
 				--PetBattlePokemonMusic.db.global[typeName].CustomTrack
@@ -3906,64 +3195,59 @@ end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global
 					if PetBattlePokemonMusic:IsStartEnabled() then
 						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
 						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
-							SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
-						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
+																		SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
+																		PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) 
+															end,
+						PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
 					else
 						SetCVar("Sound_EnableMusic", 1 )
 						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
 					end
-
 				end
 			end
-
 		end
 	else
 
-	if  PetBattlePokemonMusic.db.global[typeName].MusicType == 1 then
-				--Premade
-				if PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
-					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music )
-					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
-					
-					if PetBattlePokemonMusic:IsStartEnabled() then
-
-						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
-						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
-						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end
-							,PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
-					else
-						SetCVar("Sound_EnableMusic", 1 )
-						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+		if  PetBattlePokemonMusic.db.global[typeName].MusicType == 1 then
+					--Premade
+					if PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
+						SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music )
+						SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
+						if PetBattlePokemonMusic:IsStartEnabled() then
+							bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
+							battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+							PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end
+								,PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
+						else
+							SetCVar("Sound_EnableMusic", 1 )
+							PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
+						end
 					end
-				end
-
-	end
+		end
 		
-			if  PetBattlePokemonMusic.db.global[typeName].MusicType == 2 then
-				
-
-				local playlistKey = PetBattlePokemonMusic.db.global[typeName].Track
-				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music , PetBattlePokemonMusic.db.global[typeName].Volume.Master)
-			end
+		if  PetBattlePokemonMusic.db.global[typeName].MusicType == 2 then
+			local playlistKey = PetBattlePokemonMusic.db.global[typeName].Track
+			PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global[typeName].Volume.Music , PetBattlePokemonMusic.db.global[typeName].Volume.Master)
+		end
 		if  PetBattlePokemonMusic.db.global[typeName].MusicType == 3 then
-				--Custom
-				--PetBattlePokemonMusic.db.global[typeName].CustomTrack
-				if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
-					SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicVol)
-					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartVol)
-					--PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track]
-					if PetBattlePokemonMusic:IsStartEnabled() then
-						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
-						battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
-							SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
-						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
-					else
-						SetCVar("Sound_EnableMusic", 1 )
-						PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
-					end
-
+			--Custom
+			--PetBattlePokemonMusic.db.global[typeName].CustomTrack
+			if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track] ~= nil then
+				SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Music * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicVol)
+				SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartVol)
+				--PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track]
+				if PetBattlePokemonMusic:IsStartEnabled() then
+					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].FileName, "Master")
+					battleTimer =	self:ScheduleTimer(function () SetCVar("Sound_EnableMusic", 1 )
+						SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global[typeName].Volume.Master )
+					PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName) end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].StartSoundKey].Length)
+				else
+					SetCVar("Sound_EnableMusic", 1 )
+					PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global[typeName].Track].MusicKey].FileName)
 				end
+
 			end
+		end
 	end
 end
 function PetBattlePokemonMusic:TamerBattleOpening(name)
@@ -3991,7 +3275,7 @@ function PetBattlePokemonMusic:TamerBattleOpening(name)
 						battleTimer =	self:ScheduleTimer(function () 
 							SetCVar("Sound_EnableMusic", 1 )
 							
-																	
+																
 							PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.TamerTracks[name].Premade].MusicKey].FileName) end,
 																	
 							PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.TamerTracks[name].Premade].StartSoundKey].Length)
@@ -4003,7 +3287,6 @@ function PetBattlePokemonMusic:TamerBattleOpening(name)
 			end
 			if  PetBattlePokemonMusic.db.global.TamerTracks[name].Type == 2 then
 				--Playlist
-				
 				local playlistKey = PetBattlePokemonMusic.db.global.TamerTracks[name].Playlist
 				PetBattlePokemonMusic:StartPlaylist(playlistKey, PetBattlePokemonMusic.db.global.Trainer.Volume.Music * PetBattlePokemonMusic.db.global.TamerTracks[name].Volume.Music, PetBattlePokemonMusic.db.global.Trainer.Volume.Master * PetBattlePokemonMusic.db.global.TamerTracks[name].Volume.Master)
 			end
@@ -4493,39 +3776,7 @@ end,PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global
 	end
 end
 
----This function handles the event when a pet battle starts.
---@param event Event Name
-function PetBattlePokemonMusic:PET_BATTLE_OPENING_START(event,...)
 
-	--Save the old volumes.
-	--OldMusicVolume = GetCVar("Sound_MusicVolume")
-	--OldMasterVolume = GetCVar("Sound_MasterVolume")
-	if PetBattlePokemonMusic.db.global.InBattle == false then
-		
-		PetBattlePokemonMusic.db.global.OldMusicSettings.Volume = GetCVar("Sound_MusicVolume")
-		PetBattlePokemonMusic.db.global.OldSoundSettings.Volume = GetCVar("Sound_MasterVolume")
-		PetBattlePokemonMusic.db.global.OldMusicSettings.On = GetCVar("Sound_EnableMusic")
-		PetBattlePokemonMusic.db.global.InBattle = true		
-		--print("Saving volumes:  "..PetBattlePokemonMusic.db.global.OldSoundSettings.Volume)
-	end
-
-	--Determine the type of battle.
-	local battleType = PetBattlePokemonMusic:DetermineBattleType ()
-	if battleType == L["WILD"]  then
-		--Check to see if the 
-		
-		local name, speciesName = C_PetBattles.GetName(2,1)
-		PetBattlePokemonMusic:WildBattleOpening(name)
-	end
-	if battleType == L["TAMER"]  then
-		--PetBattlePokemonMusic:TamerBattleOpening(PetBattlePokemonMusic:GetTamerName ())
-		PetBattlePokemonMusic:UniversialBattleOpening(PetBattlePokemonMusic:GetTamerName (),"Tamer", "Trainer", "TamerTracks")
-	end
-	if battleType == "PvP"  then
-		PetBattlePokemonMusic:PvPBattleOpening(duelistName)
-
-	end
-end
 --@param event The event name.
 function PetBattlePokemonMusic:PET_BATTLE_OVER(event,...)
 	demo = {...}
@@ -4710,63 +3961,8 @@ function PetBattlePokemonMusic:VictoryPlayer()
 	end
 
 end
-function PetBattlePokemonMusic:PET_BATTLE_CLOSE(...)
 
-	--PetBattlePokemonMusic:PlaylistStop()
-	
-	--PetBattlePokemonMusic:VictoryPlayer()
-	--PetBattlePokemonMusic.db.global.OldMusicSettings.Volume = GetCVar("Sound_MusicVolume")
-	--	PetBattlePokemonMusic.db.global.OldSoundSettings.Volume = GetCVar("Sound_MasterVolume")
-	--TODO  Victory check
---	SetCVar("Sound_EnableMusic", PetBattlePokemonMusic.db.global.OldMusicSettings.On )
-	--SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.OldMusicSettings.Volume )
---	SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.OldSoundSettings.Volume )
-	-- PetBattlePokemonMusic.db.global.InBattle = false
-	
-	--currentBattlePlaylist = {}
-	--TODO:  cancel playlist timer if it is active.
-	--TODO:  Reset used playlist if set to.
-	--if currentSound ~= nil then
-	--	StopSound(currentSound)
-	--	currentSound=nil
-	--end
-end
-function PetBattlePokemonMusic:PET_BATTLE_PET_ROUND_RESULTS(a1,a2,a3,a4,a5,a6,a7,a8,a9)
-	
-end
-function PetBattlePokemonMusic:PET_BATTLE_QUEUE_PROPOSE_MATCH(...)
 
-end
----This handles an event that is thrown at the end of a pet battle.
---@param event Event name.
---@param outcomenumber This value is a number that appears to change depending on the winner.  1 seems to mean that you won.  2 seems to mean the other won.  
---More values may be possible.
-function PetBattlePokemonMusic:PET_BATTLE_FINAL_ROUND(event,outcomenumber)
-	StopMusic();
-	SetCVar("Sound_EnableMusic", OldMusicValue )
-	self:CancelTimer(battleTimer,true)
-	if currentSound ~= nil then
-		StopSound(currentSound)
-		currentSound=nil
-	end
-	if outcomenumber == 1 then
-		PetBattlePokemonMusic:VictoryPlayer()
-
-	end
-	
-		if PetBattlePokemonMusic.db.global.InBattle == true then
-			PetBattlePokemonMusic:EndBattlePlayList()
-			SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.OldMusicSettings.Volume )
-			SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.OldSoundSettings.Volume )
-			SetCVar("Sound_EnableMusic", PetBattlePokemonMusic.db.global.OldSoundSettings.On )
-			PetBattlePokemonMusic.db.global.OldMusicSettings.Volume = GetCVar("Sound_MusicVolume")
-			PetBattlePokemonMusic.db.global.OldSoundSettings.Volume = GetCVar("Sound_MasterVolume")
-			PetBattlePokemonMusic.db.global.OldSoundSettings.On = GetCVar("Sound_EnableMusic")
-			PetBattlePokemonMusic.db.global.InBattle = false
-
-		end
-	--end
-end
 function PetBattlePokemonMusic:VictoryExpire(info,val)
 	if PetBattlePokemonMusic.db.global.InBattle == true then
 		self:CancelTimer(battleTimer,true)
