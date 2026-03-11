@@ -19,7 +19,7 @@
 -- ================================================================================================================================================================================================================================================ --
 --	Version 1-2 Beta.  9/3/2012
 -- ================================================================================================================================================================================================================================================ --
---	* Added SoundLibrary to self.db.profile.
+--	* Added SoundLibrary to self.db.global.
 --	* Added SoundLibrary to interface configuration.
 --	* Reworked PetBattlePokemonMusic to use keys in the SoundLibrary.
 --	* Added functions to add new sounds.
@@ -49,41 +49,49 @@
 --	* TODO:	 Add code so that if a sound key returns a nil value when about to play it, it is aborted.  (nil value error)
 --	* 
 -- ================================================================================================================================================================================================================================================ --
-
+--	Version 1-4
+-- ================================================================================================================================================================================================================================================ --
+--	* Added Trainer Tracks.
+--	** Added trainer sound names to UndeleteableSounds.
+--	** Added premade trainer tracks to PokemonBattleMusicEffects.
+--	** Added premade trainer track names to trackNames.
+--	** Added trainer sound files to default database.
+--	* Add volume control.
+--	* TODO Add option to not use start.
 PetBattlePokemonMusic = LibStub("AceAddon-3.0"):NewAddon("PetBattlePokemonMusic", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0" );
 
 local BPApattern = "|cff4e96f7|HbattlePetAbil:(%d*):%d*:%d*:%d*|h%[.*%]|h|r"
 local iconpattern = "INTERFACE\\ICON\\.*%.BLP:%d*"
 
 
-
+--Damaged
 local BPAPatternDealtYour = "(.*) dealt %d* damage to your (.*)%."
 local BPAPatternDealtEnemy = "(.*) dealt %d* damage to enemy (.*)%."
-
-
+--Damaged Critical
 local BPAPatternDealtYourCrit = "(.*) dealt %d* damage to your (.*) %(Critical%)%."
 local BPAPatternDealtEnemyCrit = "(.*) dealt %d* damage to enemy (.*) %(Critical%)%."
-
+--Damaged Strong
 local BPAPatternDealtYourStrong = "(.*) dealt %d* damage to your INTERFACE\\.*\\.*.%BLP:14.* %(Strong%)%."
 local BPAPatternDealtEnemyStrong = "(.*) dealt %d* damage to enemy INTERFACE\\.*\\.*.%BLP:14.* %(Strong%)%."
-
+--Damaged Weak
 local BPAPatternDealtYourWeak = "(.*) dealt %d* damage to your (.*) %(Weak%)%."
 local BPAPatternDealtEnemyWeak = "(.*) dealt %d* damage to enemy (.*) %(Weak%)%."
-
+--Dodged
 local BPAPatternYourDodged = "(.*) was dodged by your (.*)%."
 local BPAPatternEnemyDodged = "(.*) was dodged by enemy (.*)%."
-
+--Faded
 local BPAPatternYourFade = "(.*) fades from your (.*)%."
 local BPAPatternEnemyFade = "(.*) fades from enemy (.*)%."
-
+--Applied
 local BPAPatternYourApp = "(.*) applied (.*) to your (.*)%."
 local BPAPatternEnemyApp = "(.*) applied (.*) to enemy (.*)%."
-
+--Miss
 local BPAPatternYourMiss = "(.*) missed your (.*)%."
 local BPAPatternEnemyMiss = "(.*) missed enemy (.*)%."
-
+--Heals
 local BPAPatternHealYour = "(.*) healed %d* damage from your (.*)%."
 local BPAPatternHealEnemy = "(.*) healed %d* damage from enemy (.*)%."
+--Weather Change:  Not complete
 local weatherIn = "(.*) changed the weather to (.*)%."
 local weatherOut ="(.*) is no longer the weather%."
 
@@ -93,7 +101,6 @@ local block = " was blocked from striking "
 
 local SoundListUI = {}
 local SoundListUIKeys = {}
-
 
 --- This is a table of strings that are used for UI elements and cannot be used for sound names.
 local unusableSoundNames = {}
@@ -134,8 +141,22 @@ local UndeleteableSounds = {}
 	UndeleteableSounds["FireRed & LifeGreen Wild Pokemon Battle"]				= true
 	UndeleteableSounds["FireRed & LifeGreen Wild Pokemon Battle Victory"]		= true	
 
-
-					
+	UndeleteableSounds["FireRed & LifeGreen Trainer Battle Start"]			= true
+	UndeleteableSounds["FireRed & LifeGreen Trainer Battle"]				= true
+	UndeleteableSounds["FireRed & LifeGreen Trainer Battle Victory"]		= true	
+				
+	UndeleteableSounds["Red, Blue, & Yellow Trainer Start"]					= true
+	UndeleteableSounds["Red, Blue, & Yellow Trainer Battle"]				= true
+	UndeleteableSounds["Red, Blue, & Yellow Trainer Victory"]		= true	
+																			
+	UndeleteableSounds["Gold & Silver Trainer Battle Start"]			= true
+	UndeleteableSounds["Gold & Silver Trainer Battle"]				= true
+	UndeleteableSounds["Gold & Silver Trainer Battle Victory"]		= true	
+	
+	UndeleteableSounds["Ruby, Saphire, & Emerald Trainer Start"]			= true
+	UndeleteableSounds["Ruby, Saphire, & Emerald Trainer Battle"]				= true
+	UndeleteableSounds["Ruby, Saphire, & Emerald Trainer Victory"]		= true	
+	
 
 --- A table for the pre-made tracks
 local PokemonBattleMusicEffects = {}
@@ -159,15 +180,38 @@ local PokemonBattleMusicEffects = {}
 										MusicKey = "FireRed & LifeGreen Wild Pokemon Battle",
 										VictoryKey = "FireRed & LifeGreen Wild Pokemon Battle Victory"
 									}
-
+	-- TRAINER
+	PokemonBattleMusicEffects[5] =	{	Name = "Red, Blue, & Yellow Trainer Battle", 
+										StartSoundKey = "Red, Blue, & Yellow Trainer Start",
+										MusicKey = "Red, Blue, & Yellow Trainer Battle",
+										VictoryKey = "Red, Blue, & Yellow Trainer Victory"
+									}
+	PokemonBattleMusicEffects[6] =	{	Name = "Gold & Silver Trainer Battle", 
+										StartSoundKey = "Gold & Silver Trainer Battle Start",
+										MusicKey = "Gold & Silver Trainer Battle",
+										VictoryKey = "Gold & Silver Trainer Battle Victory"
+									}
+	PokemonBattleMusicEffects[7] =	{	Name = "Ruby, Saphire, & Emerald Trainer Battle", 
+										StartSoundKey = "Ruby, Saphire, & Emerald Trainer Start",
+										MusicKey = "Ruby, Saphire, & Emerald Trainer Battle",
+										VictoryKey = "Ruby, Saphire, & Emerald Trainer Victory"
+									}
+	
+	PokemonBattleMusicEffects[8] =	{	Name = "FireRed & LifeGreen Trainer Battle", 
+										StartSoundKey = "FireRed & LifeGreen Trainer Battle Start",
+										MusicKey = "FireRed & LifeGreen Trainer Battle",
+										VictoryKey = "FireRed & LifeGreen Trainer Battle Victory"
+	}
+	
 local trackNames = {}
 	trackNames[1] = "Red, Blue, & Yellow Wild Pokemon Battle"
 	trackNames[2] = "Gold & Silver Wild Pokemon Battle"
 	trackNames[3] = "Ruby, Saphire, & Emerald Wild Pokemon Battle"
---trackNames[4] = "Diamond & Pearl Wild Pokemon Battle"
-	trackNames[5] = "Fire Red & Life Green Wild Pokemon Battle"
---trackNames[6] = "Ruby, Saphire, & Emerald Trainer Battle"
-
+	trackNames[4] = "FireRed & LifeGreen Wild Pokemon Battle"
+	trackNames[5] = "Red, Blue, & Yellow Trainer Battle"
+	trackNames[6] = "Gold & Silver Trainer Battle"
+	trackNames[7] = "Ruby, Saphire, & Emerald Trainer Battle"
+	trackNames[8] = "FireRed & LifeGreen Trainer Battle"
 
 local HealingSounds = {}
 	--HealingSounds[1]= "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\Poke RBY Healing.ogg"
@@ -185,40 +229,30 @@ local main = {
 	type = "group",
 	handler = PetBattlePokemonMusic,
 	args = {
---		confgendesc = {
---			order = 1,
---			type = "description",
---			name = GetAddOnMetadata("PetBattlePokemonMusic", "Notes").."\n\n",
---			cmdHidden = true
---		},
---		confinfodesc = {
---			name = "",
---			type = "group", inline = true,
---			args = {
---				confversiondesc = {
---					order = 1,
---					type = "description",
---					name = "|cffffd700".."version "..": "
-----					..G["GREEN_FONT_COLOR_CODE"]..tostring(GetAddOnMetadata("PetBattlePokemonMusic", "Version")).."\n",
---					cmdHidden = true
---				},
---				confauthordesc = {
---					order = 2,
---					type = "description",
---					name = "|cffffd700".."Author "..": "
---					..G["ORANGE_FONT_COLOR_CODE"]..GetAddOnMetadata("PetBattlePokemonMusic", "Author").."\n",
---					cmdHidden = true
---				}
-
---			}
---		}
+--StartSoundOn
+		StartSoundOp = {
+							type		= "toggle",
+							name		= "Start Sound",
+							desc		=	"Toogle whether start sound is used at beginning of battle or not.",
+							order		=	1,
+							set			=	function (info, val) PetBattlePokemonMusic.db.global.StartSoundOn = val end,
+							get			= function () return PetBattlePokemonMusic.db.global.StartSoundOn end
+						},
+		VictorySoundOp = {
+							type		= "toggle",
+							name		= "Victory Sound",
+							desc		=	"Toogle whether the victory sound is played or not.",
+							order		=	1,
+							set			=	function (info, val) PetBattlePokemonMusic.db.global.VictorySoundOn = val end,
+							get			= function () return PetBattlePokemonMusic.db.global.VictorySoundOn end
+		}
 	}
 }
 -- ================================================================================================================================================================================================================================================ --
 --											BattleMusic
 -- ================================================================================================================================================================================================================================================ --
 local BattleMusic = {
-							name = "Wild",
+							name = "Battle Music",
 							type = "group",
 							handler = PetBattlePokemonMusic,
 							childGroups = "tab",
@@ -234,37 +268,70 @@ local BattleMusic = {
 																							name		=	"Enabled",
 																							desc		=	"Toogle whether music is played for wild pet battles or not",
 																							order		=	2,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.profile.Wild.On = valu end,
-																							get			=	function () return PetBattlePokemonMusic.db.profile.Wild.On end
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Wild.On = valu end,
+																							get			=	function () return PetBattlePokemonMusic.db.global.Wild.On end
 																						},
 																		WildAlwaysOn =	{
 																							type		=	"toggle",
 																							name		=	"Always On",
 																							desc		=	"Toogles whether music will be played if music is disabled on the client",
 																							order		=	2,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.profile.Wild.Always = val end,
-																							get			=	function () return PetBattlePokemonMusic.db.profile.Wild.Always end
-																						},
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Wild.Always = val end,
+																							get			=	function () return PetBattlePokemonMusic.db.global.Wild.Always end
+																		},
+																		WildMusicVolume =	{
+																							type = "range",
+																							name = "Music Volume",
+																							min  = 0,
+																							max  = 1,
+																							step = 0.1,
+																							get = function() return  PetBattlePokemonMusic.db.global.Wild.Volume.Music; end,
+																							set = function (info, val)PetBattlePokemonMusic.db.global.Wild.Volume.Music = val;
+																								--TODO update current volume if in battle.
+																								if C_PetBattles.IsWildBattle() then
+																									SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Music )
+																								end
+																								end,
+																							order = 3
+																		},
+																WildMasterVolume =	{
+																							type = "range",
+																							name = "Sound Effect Volume",
+																							min  = 0,
+																							max  = 1,
+																							step = 0.1,
+																							get = function() return  PetBattlePokemonMusic.db.global.Wild.Volume.Master; end,
+																							set = function (info, val)PetBattlePokemonMusic.db.global.Wild.Volume.Master = val;
+																								--TODO update current volume if in battle.
+																								SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master )
+																								if C_PetBattles.IsWildBattle() then
+																											
+				
+																								end
+																							end,
+																							order = 3
+																},
+
 																		WildTrack =		{
 																							type		=	"select",
-																							order		=	3,
+																							order		=	4,
 																							style		=	"dropdown",
 																							name		=	"Track",
 																							values		=	trackNames,
-																							width		=	"double",
-																							set			=	function(info, val) PetBattlePokemonMusic.db.profile.Wild.Track = val  end,
-																							get			=	function() return PetBattlePokemonMusic.db.profile.Wild.Track end
+																							width		=	"full",
+																							set			=	function(info, val) PetBattlePokemonMusic.db.global.Wild.Track = val  end,
+																							get			=	function() return PetBattlePokemonMusic.db.global.Wild.Track end
 																						},
 																		WildCustomOn =	{
 																							type		=	"toggle",
 																							name		=	"Custom Track",
 																							desc		=	"Toogles whether the music will be used from a custom track",
-																							order		=	4,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.profile.Wild.Custom = val PetBattlePokemonMusic:ToggleCustomWild(val==false)end,
-																							get			=	function () return PetBattlePokemonMusic.db.profile.Wild.Custom end
+																							order		=	5,
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Wild.Custom = val PetBattlePokemonMusic:ToggleCustomWild(val==false)end,
+																							get			=	function () return PetBattlePokemonMusic.db.global.Wild.Custom end
 																						},
 																		WildCustom =	{
-																							order		= 5,
+																							order		= 6,
 																							type		= "description",
 																							name		= "Custom Track: ",
 																							cmdHidden	= true
@@ -282,17 +349,47 @@ local BattleMusic = {
 																							name		=	"Enabled",
 																							desc		=	"Toogle whether music is played for trainer pet battles or not",
 																							order		=	5,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.profile.Trainer.On = valu end,
-																							get			=	function () return PetBattlePokemonMusic.db.profile.Trainer.On end
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Trainer.On = valu end,
+																							get			=	function () return PetBattlePokemonMusic.db.global.Trainer.On end
 																						},
 																	TrainerAlwaysOn =	{
 																							type		=	"toggle",
 																							name		=	"Always On",
 																							desc		=	"Toogles whether music will be played if music is disabled on the client",
 																							order		=	5,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.profile.Trainer.Always = val end,
-																							get			=	function () return PetBattlePokemonMusic.db.profile.Trainer.Always end
-																						},
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Trainer.Always = val end,
+																							get			=	function () return PetBattlePokemonMusic.db.global.Trainer.Always end
+																	},
+															TrainerMusicVolume =	{
+																							type = "range",
+																							name = "Music Volume",
+																							min  = 0,
+																							max  = 1,
+																							step = 0.1,
+																							get = function() return  PetBattlePokemonMusic.db.global.Trainer.Volume.Music; end,
+																							set = function (info, val)PetBattlePokemonMusic.db.global.Trainer.Volume.Music = val;
+																								--TODO update current volume if in battle.
+																								if C_PetBattles.IsInBattle() then
+																									SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Music )
+																								end
+																								end,
+																							order = 3
+																		},
+																TrainerMasterVolume =	{
+																							type = "range",
+																							name = "Sound Effect Volume",
+																							min  = 0,
+																							max  = 1,
+																							step = 0.1,
+																							get = function() return  PetBattlePokemonMusic.db.global.Trainer.Volume.Master; end,
+																							set = function (info, val)PetBattlePokemonMusic.db.global.Trainer.Volume.Master = val;
+																								--TODO update current volume if in battle.
+																								if C_PetBattles.IsInBattle() then
+																									SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Master )
+																								end
+																								end,
+																							order = 3
+																},
 																	TrainerTrack =		{
 																							type		=	"select",
 																							order		=	6,
@@ -300,16 +397,16 @@ local BattleMusic = {
 																							name		=	"Track",
 																							values		=	trackNames,
 																							width		=	"double",
-																							set			=	function(info, val) PetBattlePokemonMusic.db.profile.Trainer.Track = val  end,
-																							get			=	function() return PetBattlePokemonMusic.db.profile.Trainer.Track end
+																							set			=	function(info, val) PetBattlePokemonMusic.db.global.Trainer.Track = val  end,
+																							get			=	function() return PetBattlePokemonMusic.db.global.Trainer.Track end
 																						},
 																	TrainerCustomOn =	{
 																							type		=	"toggle",
 																							name		=	"Custom Track",
 																							desc		=	"Toogles whether the music will be used from a custom track",
 																							order		=	7,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.profile.Trainer.Custom = val PetBattlePokemonMusic:ToggleCustomTrainer(val ==false) end,
-																							get			=	function () return PetBattlePokemonMusic.db.profile.Trainer.Custom end
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Trainer.Custom = val PetBattlePokemonMusic:ToggleCustomTrainer(val ==false) end,
+																							get			=	function () return PetBattlePokemonMusic.db.global.Trainer.Custom end
 																						},
 															
 																		TrainerCustom = {
@@ -320,31 +417,39 @@ local BattleMusic = {
 																						}
 														
 																}
-														}
+										}
+								--TODO PvP options here
 									}
 }
 
 -- ================================================================================================================================================================================================================================================ --
 --			Local Fields
 -- ================================================================================================================================================================================================================================================ --
+local battleTimer = nil
 
-local previewSelect = "none"
 local removeSelect = "none"
-
-local neoSoundNameTemp =""
-local neoSoundFileTemp = ""
-local neoSoundLengthTemp = 0
 
 local stopSoundThing = 0
 local soundPlaying = false
-local previewTimer = nil
 
+local previewSelect = "none"
+local previewTimer = nil
+local idtemp = ""
+local neoSoundFileTemp = ""
+local neoSoundLengthTemp = 0
+local neoSoundNameTemp =""
+
+local neoTrackMusic = ""
 local neoTrackName = ""
 local neoTrackStartKey = ""
-local neoTrackMusic = ""
+
 local neoTrackVictory = ""
-local battleTimer = nil
+
 local currentSound = nil
+
+local OldMusicVolume;
+local OldMasterVolume;
+local InBattle = false;
 
 local OldMusicValue =  GetCVar("Sound_EnableMusic")
 -- ================================================================================================================================================================================================================================================ --
@@ -392,11 +497,11 @@ local SoundLibrary = {
 																			print("INVALID  key term")
 																			return false
 																			end
-																			if PetBattlePokemonMusic.db.profile.SoundLibrary[neoSoundNameTemp] ~= nil then
+																			if PetBattlePokemonMusic.db.global.SoundLibrary[neoSoundNameTemp] ~= nil then
 																				--Name already used
 																				return false
 																			end
-																		PetBattlePokemonMusic.db.profile.SoundLibrary[neoSoundNameTemp] = {FileName = neoSoundFileTemp, Length = neoSoundLengthTemp}
+																		PetBattlePokemonMusic.db.global.SoundLibrary[neoSoundNameTemp] = {FileName = neoSoundFileTemp, Length = neoSoundLengthTemp}
 																		PetBattlePokemonMusic:AddSoundToConfig(neoSoundNameTemp)
 															 end,
 															order = 3
@@ -427,12 +532,12 @@ PetBattlePokemonMusic:FillSoundListUI()
 					args = {
 								SoundFile =		{
 													type	= "description",
-													name	= "File Name: "..self.db.profile.SoundLibrary[soundkey].FileName,
+													name	= "File Name: "..self.db.global.SoundLibrary[soundkey].FileName,
 													order	= 1
 												},
 								SoundLength =	{
 													type	= "description",
-													name	= "Length: "..tostring(self.db.profile.SoundLibrary[soundkey].Length).." seconds",
+													name	= "Length: "..tostring(self.db.global.SoundLibrary[soundkey].Length).." seconds",
 													order	= 2
 												},
 								PlayButton =	{
@@ -440,8 +545,8 @@ PetBattlePokemonMusic:FillSoundListUI()
 													name = "Play",
 													func = function ()
 																if soundPlaying == false then
-																			previewTimer = self:ScheduleTimer("StopEvent", tonumber(self.db.profile.SoundLibrary[soundkey].Length))
-																			bla,stopSoundThing= PlaySoundFile(self.db.profile.SoundLibrary[soundkey].FileName,"Master")  
+																			previewTimer = self:ScheduleTimer("StopEvent", tonumber(self.db.global.SoundLibrary[soundkey].Length))
+																			bla,stopSoundThing= PlaySoundFile(self.db.global.SoundLibrary[soundkey].FileName,"Master")  
 																			soundPlaying = true
 																end
 															end, 
@@ -455,7 +560,7 @@ PetBattlePokemonMusic:FillSoundListUI()
 																		soundPlaying = false
 																		StopSound(stopSoundThing)
 																		PetBattlePokemonMusic:RemoveSoundFromAllAbilityOptions(soundkey)
-																		self.db.profile.SoundLibrary[soundkey] = nil  
+																		self.db.global.SoundLibrary[soundkey] = nil  
 																		SoundLibrary.args[soundkey] = nil 
 																		for key, value in pairs(self.db.CustomTracks) do
 																			if value.StartSoundKey == soundkey then
@@ -463,11 +568,11 @@ PetBattlePokemonMusic:FillSoundListUI()
 																				BattleMusic.args.WildHeader.args[key] = nil
 																				BattleMusic.args.TrainerHeader.args[key] = nil
 
-																				if self.db.profile.Wild.CustomTrack == key then
-																					self.db.profile.Wild.CustomTrack = nil
+																				if self.db.global.Wild.CustomTrack == key then
+																					self.db.global.Wild.CustomTrack = nil
 																				end
-																				if self.db.profile.Trainer.CustomTrack == key then
-																					self.db.profile.Trainer.CustomTrack = nil
+																				if self.db.global.Trainer.CustomTrack == key then
+																					self.db.global.Trainer.CustomTrack = nil
 																				end
 																			end		
 																			if value.MusicKey == soundkey then
@@ -475,11 +580,11 @@ PetBattlePokemonMusic:FillSoundListUI()
 																				BattleMusic.args.WildHeader.args[key] = nil
 																				BattleMusic.args.TrainerHeader.args[key] = nil
 
-																				if self.db.profile.Wild.CustomTrack == key then
-																					self.db.profile.Wild.CustomTrack = nil
+																				if self.db.global.Wild.CustomTrack == key then
+																					self.db.global.Wild.CustomTrack = nil
 																				end
-																				if self.db.profile.Trainer.CustomTrack == key then
-																					self.db.profile.Trainer.CustomTrack = nil
+																				if self.db.global.Trainer.CustomTrack == key then
+																					self.db.global.Trainer.CustomTrack = nil
 																				end
 																			end	
 																			if value.VictoryKey == soundkey then
@@ -487,11 +592,11 @@ PetBattlePokemonMusic:FillSoundListUI()
 																				BattleMusic.args.WildHeader.args[key] = nil
 																				BattleMusic.args.TrainerHeader.args[key] = nil
 
-																				if self.db.profile.Wild.CustomTrack == key then
-																					self.db.profile.Wild.CustomTrack = nil
+																				if self.db.global.Wild.CustomTrack == key then
+																					self.db.global.Wild.CustomTrack = nil
 																				end
-																				if self.db.profile.Trainer.CustomTrack == key then
-																					self.db.profile.Trainer.CustomTrack = nil
+																				if self.db.global.Trainer.CustomTrack == key then
+																					self.db.global.Trainer.CustomTrack = nil
 																				end
 																			end	
 																			
@@ -537,15 +642,15 @@ local OtherSounds = {
 															name	=		"Enabled",
 															desc	=		"Toogle whether pokemon center sound effect is played when healing your pets or not",
 															order	=		2,
-															set		=		function (info, val) PetBattlePokemonMusic.db.profile.SoundEffects.HealingSound.Enabled = valu end,
-															get		=		function () return PetBattlePokemonMusic.db.profile.SoundEffects.HealingSound.Enabled end
+															set		=		function (info, val) PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Enabled = valu end,
+															get		=		function () return PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Enabled end
 														},
 									HealingPets =		{
 															type	= "select",
 															name	= "Healing Pet Sound",
 															values	= HealingSoundNames,
-															get		= function() return PetBattlePokemonMusic.db.profile.SoundEffects.HealingSound.Value end,
-															set		= function(info, val) PetBattlePokemonMusic.db.profile.SoundEffects.HealingSound.Value = val end,
+															get		= function() return PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Value end,
+															set		= function(info, val) PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Value = val end,
 															style	= "dropdown",
 															order	= 2
 														}
@@ -627,23 +732,23 @@ function PetBattlePokemonMusic:SaveNewTrack()
 		CreateCustomTrack.args.BadTrack.name = ("|cffFF0000%s|r"):format(tostring("Cannot use that name"))
 		return false
 	else
-		if self.db.profile.CustomTracks[neoTrackName] ~= nil then
+		if self.db.global.CustomTracks[neoTrackName] ~= nil then
 			CreateCustomTrack.args.BadTrack.name = "Track name already used"
 			return false
 		else
 			--neoTrackStartKey
-			if self.db.profile.SoundLibrary[neoTrackStartKey] == nil then
+			if self.db.global.SoundLibrary[neoTrackStartKey] == nil then
 				CreateCustomTrack.args.BadTrack.name = ("|cffFF0000%s|r"):format(tostring("Start sound not selected"))
 			else
-				if self.db.profile.SoundLibrary[neoTrackMusic] == nil then
+				if self.db.global.SoundLibrary[neoTrackMusic] == nil then
 					CreateCustomTrack.args.BadTrack.name = ("|cffFF0000%s|r"):format(tostring("Music Track not selected"))
 				else
-					if self.db.profile.SoundLibrary[neoTrackVictory] == nil then
+					if self.db.global.SoundLibrary[neoTrackVictory] == nil then
 						CreateCustomTrack.args.BadTrack.name = ("|cffFF0000%s|r"):format(tostring("Victory Sound not selected"))
 					else
 						CreateCustomTrack.args.BadTrack.name =""
 						
-							self.db.profile.CustomTracks[neoTrackName] ={StartSoundKey = neoTrackStartKey,
+							self.db.global.CustomTracks[neoTrackName] ={StartSoundKey = neoTrackStartKey,
 									MusicKey = neoTrackMusic,
 									VictoryKey = neoTrackVictory}
 									neoTrackVictory = ""
@@ -665,12 +770,12 @@ end
 function PetBattlePokemonMusic:SetUpCustomCreator()
 	CreateCustomTrack.args.StartSoundGroup.args = {}
 	
-	for key, val in pairs (self.db.profile.SoundLibrary) do
+	for key, val in pairs (self.db.global.SoundLibrary) do
 			CreateCustomTrack.args.StartSoundGroup.args[key] = {
 																	type = "group",
 																	name = key,
 																	--name = ("|cffffd200%s|r"):format(tostring(key)),
-																	--disabled = PetBattlePokemonMusic.db.profile.Wild.Custom,
+																	--disabled = PetBattlePokemonMusic.db.global.Wild.Custom,
 																	args = 	{
 																				SetStart = {
 																								type	= "execute",
@@ -687,7 +792,7 @@ function PetBattlePokemonMusic:SetUpCustomCreator()
 																	type = "group",
 																	name = key,
 																	--name = ("|cffffd200%s|r"):format(tostring(key)),
-																	--disabled = PetBattlePokemonMusic.db.profile.Wild.Custom,
+																	--disabled = PetBattlePokemonMusic.db.global.Wild.Custom,
 																	args = 	{
 																				SetStart = {
 																								type	= "execute",
@@ -706,7 +811,7 @@ function PetBattlePokemonMusic:SetUpCustomCreator()
 																	type = "group",
 																	name = key,
 																	--name = ("|cffffd200%s|r"):format(tostring(key)),
-																	--disabled = PetBattlePokemonMusic.db.profile.Wild.Custom,
+																	--disabled = PetBattlePokemonMusic.db.global.Wild.Custom,
 																	args = 	{
 																				SetStart = {
 																								type	= "execute",
@@ -726,7 +831,7 @@ end
 --
 --@param wer
 function PetBattlePokemonMusic:ToggleCustomWild(wer)
-	for key, val in pairs (self.db.profile.CustomTracks) do
+	for key, val in pairs (self.db.global.CustomTracks) do
 		if BattleMusic.args.WildHeader.args[key]~= nil then
 			BattleMusic.args.WildHeader.args[key].disabled = wer
 		end
@@ -736,7 +841,7 @@ end
 --
 --@param wer
 function PetBattlePokemonMusic:ToggleCustomTrainer(wer)
-	for key, val in pairs (self.db.profile.CustomTracks) do
+	for key, val in pairs (self.db.global.CustomTracks) do
 		if BattleMusic.args.TrainerHeader.args[key] ~= nil then
 			BattleMusic.args.TrainerHeader.args[key].disabled = wer
 		end
@@ -745,12 +850,12 @@ end
 --- This function fills up the Custom list for the wild tab with the custom tracks.
 --
 function PetBattlePokemonMusic:FillCustomWild()
-	for key, val in pairs (self.db.profile.CustomTracks) do
-	if self.db.profile.CustomTracks[key].StartSoundKey~= nil or self.db.profile.CustomTracks[key].MusicKey~= nil or self.db.profile.CustomTracks[key].VictoryKey~=nil then
+	for key, val in pairs (self.db.global.CustomTracks) do
+	if self.db.global.CustomTracks[key].StartSoundKey~= nil or self.db.global.CustomTracks[key].MusicKey~= nil or self.db.global.CustomTracks[key].VictoryKey~=nil then
 		BattleMusic.args.WildHeader.args[key] = {
 														type		= "group",
 														name		= key,
-														disabled	= self.db.profile.Wild.Custom==false,
+														disabled	= self.db.global.Wild.Custom==false,
 														args	= {
 																	SetTrack = {
 																					type	= "execute",
@@ -758,7 +863,7 @@ function PetBattlePokemonMusic:FillCustomWild()
 																					order	= 1,
 																					func	=	function () 
 																									BattleMusic.args.WildHeader.args.WildCustom.name= "Custom Track: "..key  
-																									self.db.profile.Wild.CustomTrack = key	  
+																									self.db.global.Wild.CustomTrack = key	  
 																								end
 																				}
 																
@@ -771,18 +876,18 @@ end
 --- This function fills up the Custom list for the trainer tab with the custom tracks.
 --
 function PetBattlePokemonMusic:FillCustomTrainer()
-	for key, val in pairs (self.db.profile.CustomTracks) do
-	if self.db.profile.CustomTracks[key].StartSoundKey~= nil or self.db.profile.CustomTracks[key].MusicKey~= nil or self.db.profile.CustomTracks[key].VictoryKey~=nil then
+	for key, val in pairs (self.db.global.CustomTracks) do
+	if self.db.global.CustomTracks[key].StartSoundKey~= nil or self.db.global.CustomTracks[key].MusicKey~= nil or self.db.global.CustomTracks[key].VictoryKey~=nil then
 		BattleMusic.args.TrainerHeader.args[key] = {
 													type = "group",
 													name = key,
-													disabled = self.db.profile.Trainer.Custom==false,
+													disabled = self.db.global.Trainer.Custom==false,
 													args = 	{
 																SetTrack = {
 																				type = "execute",
 																				name = "Select",
 																				order = 1,
-																				func = function () BattleMusic.args.TrainerHeader.args.TrainerCustom.name= "Custom Track: "..key  self.db.profile.Trainer.CustomTrack = key	  end
+																				func = function () BattleMusic.args.TrainerHeader.args.TrainerCustom.name= "Custom Track: "..key  self.db.global.Trainer.CustomTrack = key	  end
 																			}
 																
 															}
@@ -809,7 +914,7 @@ local CustomTrackLibrary =	{
 --@param key The string key used to identify a custom track.
 function PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 
-	if self.db.profile.CustomTracks[key] ~= nil and self.db.profile.CustomTracks[key].StartSoundKey~= nil and self.db.profile.CustomTracks[key].MusicKey~= nil and self.db.profile.CustomTracks[key].VictoryKey~=nil then
+	if self.db.global.CustomTracks[key] ~= nil and self.db.global.CustomTracks[key].StartSoundKey~= nil and self.db.global.CustomTracks[key].MusicKey~= nil and self.db.global.CustomTracks[key].VictoryKey~=nil then
 		CustomTrackLibrary.args[key] =	{
 											type		= "group",
 											childGroups = "tab",
@@ -817,17 +922,17 @@ function PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 											args		=	{
 																	StartDesc = {--CustomTrackLibrary.args[key].args.StartDesc
 																					type = "description",
-																					name = "Start Sound: "..self.db.profile.CustomTracks[key].StartSoundKey,
+																					name = "Start Sound: "..self.db.global.CustomTracks[key].StartSoundKey,
 																					order = 2
 																				},
 																	MusicDesc = { --CustomTrackLibrary.args[key].args.MusicDesc
 																					type = "description",
-																					name = "Music Track: "..self.db.profile.CustomTracks[key].MusicKey,
+																					name = "Music Track: "..self.db.global.CustomTracks[key].MusicKey,
 																					order = 3
 																				},
 																VictoryDesc =	{--CustomTrackLibrary.args[key].args.VictoryDesc
 																					type = "description",
-																					name = "Victory Sound: "..self.db.profile.CustomTracks[key].VictoryKey,
+																					name = "Victory Sound: "..self.db.global.CustomTracks[key].VictoryKey,
 																					order = 4
 																				},
 
@@ -836,14 +941,14 @@ function PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 																					name	= "Delete",
 																					order	= 6,
 																					func	=	function () 
-																									self.db.profile.CustomTracks[key]= nil  
+																									self.db.global.CustomTracks[key]= nil  
 																									CustomTrackLibrary.args[key] = nil 
 																									BattleMusic.args.TrainerHeader.args[key] = nil 
 																									BattleMusic.args.WildHeader.args[key] = nil 
-																									if self.db.profile.Wild.CustomTrack == key then
+																									if self.db.global.Wild.CustomTrack == key then
 																										--TODO set custom track to another, if there is one.
 																									end
-																									if self.db.profile.Trainer.CustomTrack == key then
+																									if self.db.global.Trainer.CustomTrack == key then
 																										--TODO set custom track to another, if there is one.
 																									end
 																								end
@@ -870,7 +975,7 @@ function PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 
 										}
 
-		for k, v in pairs (self.db.profile.SoundLibrary) do
+		for k, v in pairs (self.db.global.SoundLibrary) do
 			if k ~= nil then
 					CustomTrackLibrary.args[key].args.StartEffect.args[k] =	{
 																				type = "group",
@@ -882,7 +987,7 @@ function PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 																											order = 3,
 																											func =	function () 
 																														CustomTrackLibrary.args[key].args.StartDesc.name = "Start Sound: "..k    
-																														self.db.profile.CustomTracks[key].StartSoundKey   = k 
+																														self.db.global.CustomTracks[key].StartSoundKey   = k 
 																													end
 																										}
 																						}
@@ -898,7 +1003,7 @@ function PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 																											order = 3,
 																											func =	function () 
 																														CustomTrackLibrary.args[key].args.MusicDesc.name = "Music Track: "..k    
-																														self.db.profile.CustomTracks[key].MusicKey    = k  
+																														self.db.global.CustomTracks[key].MusicKey    = k  
 																													end
 																										}
 																						}
@@ -914,7 +1019,7 @@ function PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 																												order = 3,
 																												func =	function () 
 																															CustomTrackLibrary.args[key].args.VictoryDesc.name =  "Victory Sound: "..k    
-																															self.db.profile.CustomTracks[key].VictoryKey   = k 
+																															self.db.global.CustomTracks[key].VictoryKey   = k 
 																														end
 																											}
 																						}
@@ -926,11 +1031,11 @@ end
 ---
 --
 function PetBattlePokemonMusic:FillCustomLib()
-	for key,val in pairs (self.db.profile.CustomTracks) do
+	for key,val in pairs (self.db.global.CustomTracks) do
 		PetBattlePokemonMusic:AddCustomTrackToLibrary (key)
 	end
 end
-local idtemp = ""
+
 local BattlePetAbilitySoundSettings =	{
 											type = "group",
 											name = "Battle Pet Sounds",
@@ -938,15 +1043,15 @@ local BattlePetAbilitySoundSettings =	{
 														BPAbilitySounds ={
 																			type = "toggle",
 																			name = "Enabled",
-																			get = function () return PetBattlePokemonMusic.db.profile.BPAbilitySoundsOn end,
-																			set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySoundsOn = val end,
+																			get = function () return PetBattlePokemonMusic.db.global.BPAbilitySoundsOn end,
+																			set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySoundsOn = val end,
 																			order = 1
 														},
 														descbox =		{
 																			type = "description",
 																			name = "Spell: ",
 																			order = 4,
-																			image = "INTERFACE\ICONS\INV_Misc_QuestionMark.png"
+																			image = "INTERFACE\BUTTONS\UI-EmptySlot.blp"
 																		},
 														BPAInputBox =	{
 																			type = "input",
@@ -961,7 +1066,7 @@ local BattlePetAbilitySoundSettings =	{
 
 																					demo,a1,a2,a3,a4,a5,a6 = C_PetBattles.GetAbilityInfoByID(tonumber(val))
 																					if a1 ~= nil then
-																					
+																					print(a2)
 																						PetBattlePokemonMusic:UpdateDesco(a1,a2)
 																					end
 																				 
@@ -978,7 +1083,7 @@ local BattlePetAbilitySoundSettings =	{
 																			type = "execute",
 																			name = "Add",
 																			order = 3,
-																			func = function() PetBattlePokemonMusic:AddAbility(idtemp) PetBattlePokemonMusic:AddAbilityUI(idtemp) idtemp = ""  end
+																			func = function() PetBattlePokemonMusic:AddAbility(idtemp) idtemp = ""  end
 														
 														
 																		}
@@ -989,8 +1094,8 @@ function PetBattlePokemonMusic:AddAbility(id)
 	if tonumber(id) == nil then
 		return false
 	end
-	if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)] == nil then
-		PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)] = {	Damage = {File = "", On = true},
+	if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(id)] == nil then
+		PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(id)] = {	Damage = {File = "", On = true},
 																			Healing ={File = "", On = true},
 																			Applied ={File = "", On = true},
 																			Dodged = {File = "", On = true},
@@ -998,7 +1103,7 @@ function PetBattlePokemonMusic:AddAbility(id)
 																			Faded = {File = "", On = true},
 																			Blocked ={File = "", On = true}
 																			}
-		
+		PetBattlePokemonMusic:AddAbilityUI(id)
 	else
 		return false
 	end
@@ -1016,123 +1121,113 @@ function PetBattlePokemonMusic:AddAbility(id)
 																			damIn =	{
 																						type = "select",
 																						name = "Damage sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Damage.File] end,
-																						set = function(info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Damage.File = SoundListUI[val] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Damage.File] end,
+																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Damage.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 1
 																					},
 																		damon 	= {
 																						type = "toggle",
 																						name = "Enabled",
-																						get = function() return PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Damage.On end,
-																						set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Damage.On = val end,
+																						get = function() return PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Damage.On end,
+																						set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Damage.On = val end,
 																						order =2
 																		
 																					},
 																		healIn =	{
 																						type = "select",
 																						name = "Healing sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Healing.File] end,
-																						set = function(info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Healing.File = SoundListUI[val] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Healing.File] end,
+																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Healing.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 3
 																					},
 																		healon 	= {
 																						type = "toggle",
 																						name = "Enabled",
-																						get = function() return PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Healing.On end,
-																						set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Healing.On = val end,
+																						get = function() return PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Healing.On end,
+																						set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Healing.On = val end,
 																						order =4
 																		
 																					},
 																		applIn =	{
 																						type = "select",
 																						name = "Applied sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Applied.File] end,
-																						set = function(info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Applied.File = SoundListUI[val] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Applied.File] end,
+																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Applied.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 5
 																					},
 																		appon 	= {
 																						type = "toggle",
 																						name = "Enabled",
-																						get = function() return PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Applied.On end,
-																						set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Applied.On = val end,
+																						get = function() return PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Applied.On end,
+																						set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Applied.On = val end,
 																						order =6
 																		
 																					},
 																		missIn =	{
 																						type = "select",
 																						name = "Missed sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Missed.File] end,
-																						set = function(info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Missed.File = SoundListUI[val] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Missed.File] end,
+																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Missed.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 7
 																					},
 																		misson 	= {
 																						type = "toggle",
 																						name = "Enabled",
-																						get = function() return PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Missed.On end,
-																						set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Missed.On = val end,
+																						get = function() return PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Missed.On end,
+																						set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Missed.On = val end,
 																						order =8
 																		
 																					},
 																		dodgeIn =	{
 																						type = "select",
 																						name = "Dodged sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Dodged.File] end,
-																						set = function(info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Dodged.File = SoundListUI[val] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Dodged.File] end,
+																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Dodged.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 9
 																					},
 																			dodgeon 	= {
 																						type = "toggle",
 																						name = "Enabled",
-																						get = function() return PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Dodged.On end,
-																						set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Dodged.On = val end,
+																						get = function() return PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Dodged.On end,
+																						set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Dodged.On = val end,
 																						order =10
 																		
 																					},
 																		blockIn =	{
 																						type = "select",
 																						name = "Block sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Blocked.File] end,
-																						set = function(info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Blocked.File = SoundListUI[val] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Blocked.File] end,
+																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Blocked.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 11
 																					},
 																		blockon 	= {
 																						type = "toggle",
 																						name = "Enabled",
-																						get = function() return PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Blocked.On end,
-																						set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Blocked.On = val end,
+																						get = function() return PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Blocked.On end,
+																						set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Blocked.On = val end,
 																						order =12
 																		
 																					},
 																		fadeIn =	{
 																						type = "select",
 																						name = "Fade sound",
-																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Faded.File] end,
-																						set = function(info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Faded.File = SoundListUI[val] end,
+																						get = function() return SoundListUIKeys[PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Faded.File] end,
+																						set = function(info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Faded.File = SoundListUI[val] end,
 																						values = SoundListUI,
 																						order = 13
 																					},
 																		fadeon 	= {
 																						type = "toggle",
 																						name = "Enabled",
-																						get = function() return PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Faded.On end,
-																						set = function (info, val) PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)].Faded.On = val end,
+																						get = function() return PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Faded.On end,
+																						set = function (info, val) PetBattlePokemonMusic.db.global.BPAbilitySounds[id].Faded.On = val end,
 																						order =14
-																		
-																					},
-																		removeit = {
-																						type = "execute",
-																						name = "Remove",
-																						order = 15,
-																						func = function() 
-																											PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(id)] = nil
-																									BattlePetAbilitySoundSettings.args[tostring(id)] = nil
-																									end
 																		
 																					}
 																		}
@@ -1142,7 +1237,7 @@ function PetBattlePokemonMusic:AddAbility(id)
 end
 function PetBattlePokemonMusic:FILLSOUNDLIST ()
 	str =""
-	for key, val in pairs(PetBattlePokemonMusic.db.profile.SoundLibrary) do
+	for key, val in pairs(PetBattlePokemonMusic.db.global.SoundLibrary) do
 		str = str..key.."\n"
 	end
 
@@ -1150,11 +1245,9 @@ function PetBattlePokemonMusic:FILLSOUNDLIST ()
 end
 function PetBattlePokemonMusic:UpdateDesco(key, img)
 	BattlePetAbilitySoundSettings.args.descbox.name = "Spell: "..tostring(key)
-
 	BattlePetAbilitySoundSettings.args.descbox.image = img
 end		
 function PetBattlePokemonMusic:UpdateDescoINVALID()
-
 	BattlePetAbilitySoundSettings.args.descbox.name = "INVALID ID"
 	BattlePetAbilitySoundSettings.args.descbox.image = nil
 end							
@@ -1171,14 +1264,12 @@ function PetBattlePokemonMusic:AddSoundToAllAbilityOptions(soundkey)
 	
 end
 function PetBattlePokemonMusic:SetUpAbilities()
-	for key, val in pairs (PetBattlePokemonMusic.db.profile.BPAbilitySounds) do
+	for key, val in pairs (PetBattlePokemonMusic.db.global.BPAbilitySounds) do
 		PetBattlePokemonMusic:AddAbilityUI(key)
 	end
-
-
 end
 
-				--self.db.profile.Wild.CustomTrack		
+				--self.db.global.Wild.CustomTrack		
 -- ================================================================================================================================================================================================================================================ --
 --					Database Defaults
 -- ================================================================================================================================================================================================================================================ --
@@ -1187,22 +1278,26 @@ end
 -- SoundLibrary holds all of the sound file addresses and their durations.
 -- SoundEffects is a table that indexs sound files by the spell ID that plays them.
 local defaults = {
-					profile={	
+					global={	
+									StartSoundOn = true,
+									VictorySoundOn = true,
 									Wild = {
 												Track		= 3,
 												On			= true,
 												Always		= true,
 												Custom		= false,
-												CustomTrack = 1
+												CustomTrack = 1,
+												Volume = {Music = 0.5, Master = 0.5}
 											},
 								Trainer =	{
 												Track		= 2,
 												On			= true,
 												Always		= true,
 												Custom		= false,
-												CustomTrack = 1
+												CustomTrack = 1,
+												Volume = {Music = 0.5, Master = 0.5}
 											},
-		
+								PlayLists = {},
 								SoundLibrary	= {},	-- {FileName, Length}
 								CustomTracks	= {},
 								TrackNames		= {},
@@ -1210,75 +1305,173 @@ local defaults = {
 								BPAbilitySounds = {},
 								SoundEffects	=	{
 														HealingSound = {Value =3, Enabled = true}
-													} --PetBattlePokemonMusic.db.profile.SoundEffects.HealingSound
+													} --PetBattlePokemonMusic.db.global.SoundEffects.HealingSound
 				
 			}
 }
 
 --Built in sound files.
+--CustomTracks   SoundLibrary   SoundEffects   BPAbilitySounds
+----------------------------------Red, Blue, Yellow Sound Files----------------------------------
+defaults.global.SoundLibrary["Red, Blue, & Yellow Wild Pokemon Battle Start"] = {	
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Wild Start.ogg",
+	Length = 2.8}
+																					
+defaults.global.SoundLibrary["Red, Blue, & Yellow Wild Pokemon Battle"] = {		
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Wild.ogg",
+	Length = 78.5}		
+																					
+defaults.global.SoundLibrary["Red, Blue, & Yellow Wild Pokemon Battle Victory"] = {
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\Poke RBY Victory Wild.ogg",
+	Length = 8}
 
-defaults.profile.SoundLibrary["Red, Blue, & Yellow Wild Pokemon Battle Start"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Wild Start.ogg",
-																					Length = 2.8}
-defaults.profile.SoundLibrary["Gold & Silver Wild Pokemon Battle Start"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Wild Start.ogg",
-																				Length = 2.65}
-defaults.profile.SoundLibrary["Ruby, Saphire, & Emerald Wild Pokemon Battle Start"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Wild Start.ogg",
-																						Length = 2.685}
-defaults.profile.SoundLibrary["FireRed & LifeGreen Wild Pokemon Battle Start"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild Start.ogg",
-																					Length = 2.485}
-defaults.profile.SoundLibrary["Red, Blue, & Yellow Wild Pokemon Battle Victory"] = {FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\Poke RBY Victory Wild.ogg",
-																					Length = 34.8}
-defaults.profile.SoundLibrary["Red, Blue, & Yellow Wild Pokemon Battle"] = {FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Wild.ogg",
-																							Length = 78.5}
-defaults.profile.SoundLibrary["Gold & Silver Wild Pokemon Battle"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Wild.ogg",
-																		Length = 78}																					
-defaults.profile.SoundLibrary["Ruby, Saphire, & Emerald Wild Pokemon Battle"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Wild.ogg",
-																					Length = 78.5}																						
-defaults.profile.SoundLibrary["FireRed & LifeGreen Wild Pokemon Battle"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild.ogg",
-																				Length = 82.5}																							
-defaults.profile.SoundLibrary["Gold & Silver Wild Pokemon Battle Victory"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Victory Wild.ogg",
-																				Length = 34.5}
-defaults.profile.SoundLibrary["Ruby, Saphire, & Emerald Wild Pokemon Battle Victory"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Wild Victory.ogg",
-																							Length = 21}
-defaults.profile.SoundLibrary["FireRed & LifeGreen Wild Pokemon Battle Victory"] = {	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild Victory.ogg",
-																						Length = 30.2}														
+defaults.global.SoundLibrary["Red, Blue, & Yellow Trainer Start"] = {				
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Trainer Start.ogg",
+	Length = 3}
 
+defaults.global.SoundLibrary["Red, Blue, & Yellow Trainer Battle"] = {				
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Trainer.ogg",
+	Length = 94.5}
 
-	--PetBattlePokemonMusic.db.profile.BPAbilitySounds[key]																		
+defaults.global.SoundLibrary["Red, Blue, & Yellow Trainer Victory"] = {			
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Trainer Victory.ogg",
+	Length = 7}
+----------------------------------Gold and Silver Sound Files----------------------------------
+defaults.global.SoundLibrary["Gold & Silver Wild Pokemon Battle Start"] = {	
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Wild Start.ogg",
+	Length = 2.65}
+																				
+defaults.global.SoundLibrary["Gold & Silver Wild Pokemon Battle"] = {			
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Wild.ogg",
+	Length = 78}	
+																				
+defaults.global.SoundLibrary["Gold & Silver Wild Pokemon Battle Victory"] = {	
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Victory Wild.ogg",
+	Length = 8}
+																				
+defaults.global.SoundLibrary["Gold & Silver Trainer Battle Start"] = {			
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Trainer Start.ogg",
+	Length = 2.75}																							
+																						
+defaults.global.SoundLibrary["Gold & Silver Trainer Battle"] = {				
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Trainer.ogg",
+	Length = 210}																						
+
+defaults.global.SoundLibrary["Gold & Silver Trainer Battle Victory"] = {		
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\GS\\GS Trainer Victory.ogg",																			
+	Length = 7.0}																				
+																				
+----------------------------------Ruby, Saphire, Emerald Sound Files----------------------------------
+																				
+defaults.global.SoundLibrary["Ruby, Saphire, & Emerald Wild Pokemon Battle Start"] = {		
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Wild Start.ogg",																						
+	Length = 2.685}
+																						
+defaults.global.SoundLibrary["Ruby, Saphire, & Emerald Wild Pokemon Battle"] = {			
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Wild.ogg",																					
+	Length = 78.5}	
+																							
+defaults.global.SoundLibrary["Ruby, Saphire, & Emerald Wild Pokemon Battle Victory"] = {	
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Wild Victory.ogg",
+	Length = 8}
+																																											
+defaults.global.SoundLibrary["Ruby, Saphire, & Emerald Trainer Start"] = {					
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Trainer Start.ogg",																						
+	Length = 2.685}
+																							
+defaults.global.SoundLibrary["Ruby, Saphire, & Emerald Trainer Battle"] = {				
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Trainer.ogg",																						
+	Length = 168.5}	
+																							
+defaults.global.SoundLibrary["Ruby, Saphire, & Emerald Trainer Victory"] = {				
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RSE\\RSE Trainer Victory.ogg",																						
+	Length = 7.5}																						
+----------------------------------FireRed and LeafGreen Sound Files----------------------------------
+defaults.global.SoundLibrary["FireRed & LifeGreen Wild Pokemon Battle Start"] = {		
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild Start.ogg",
+	Length = 2.485}
+					
+defaults.global.SoundLibrary["FireRed & LifeGreen Wild Pokemon Battle"] = {			
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild.ogg",
+	Length = 82.5}																							
+								
+defaults.global.SoundLibrary["FireRed & LifeGreen Wild Pokemon Battle Victory"] = {	
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild Victory.ogg",
+	Length = 8}
+				
+defaults.global.SoundLibrary["FireRed & LifeGreen Trainer Battle Start"] = {			
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Trainer Start.ogg",
+	Length = 3.005}
+																					
+defaults.global.SoundLibrary["FireRed & LifeGreen Trainer Battle"] = {					
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Trainer.ogg",
+	Length = 201.25}	
+
+defaults.global.SoundLibrary["FireRed & LifeGreen Trainer Battle Victory"] = {			
+	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Trainer Victory.ogg",
+	Length = 8.3}																				
+----------------------------------------------------------------------------------------------------------------------------------------
+	--PetBattlePokemonMusic.db.global.BPAbilitySounds[key]																		
 function PetBattlePokemonMusic:SetUpSL()
-	for key,val in pairs (PetBattlePokemonMusic.db.profile.SoundLibrary) do
+	for key,val in pairs (PetBattlePokemonMusic.db.global.SoundLibrary) do
 		PetBattlePokemonMusic:AddSoundToConfig(key)
 	end
 end
 function PetBattlePokemonMusic:FillSoundListUI()
 	SoundListUI = {}
 	SoundListUIKeys = {}
-	for k, v in pairs (PetBattlePokemonMusic.db.profile.SoundLibrary) do
+	for k, v in pairs (PetBattlePokemonMusic.db.global.SoundLibrary) do
 		tinsert(SoundListUI,k)
 		SoundListUIKeys[k] = #SoundListUI
 	end
-	for k, v in pairs (PetBattlePokemonMusic.db.profile.BPAbilitySounds) do
+	for k, v in pairs (PetBattlePokemonMusic.db.global.BPAbilitySounds) do
 		if BattlePetAbilitySoundSettings.args[tostring(k)] ~= nil then
-		BattlePetAbilitySoundSettings.args[tostring(k)].args.damIn.values = SoundListUI
-		BattlePetAbilitySoundSettings.args[tostring(k)].args.healIn.values = SoundListUI
-		BattlePetAbilitySoundSettings.args[tostring(k)].args.applIn.values = SoundListUI
-		BattlePetAbilitySoundSettings.args[tostring(k)].args.missIn.values = SoundListUI
-		BattlePetAbilitySoundSettings.args[tostring(k)].args.dodgeIn.values = SoundListUI
-		BattlePetAbilitySoundSettings.args[tostring(k)].args.blockIn.values = SoundListUI
-		BattlePetAbilitySoundSettings.args[tostring(k)].args.fadeIn.values = SoundListUI
+			BattlePetAbilitySoundSettings.args[tostring(k)].args.damIn.values = SoundListUI
+			BattlePetAbilitySoundSettings.args[tostring(k)].args.healIn.values = SoundListUI
+			BattlePetAbilitySoundSettings.args[tostring(k)].args.applIn.values = SoundListUI
+			BattlePetAbilitySoundSettings.args[tostring(k)].args.missIn.values = SoundListUI
+			BattlePetAbilitySoundSettings.args[tostring(k)].args.dodgeIn.values = SoundListUI
+			BattlePetAbilitySoundSettings.args[tostring(k)].args.blockIn.values = SoundListUI
+			BattlePetAbilitySoundSettings.args[tostring(k)].args.fadeIn.values = SoundListUI
 		end
 	end
 	
 	
 end
 function PetBattlePokemonMusic:OnInitialize()
-	
-
+	---------------------------------------------------------------------------------------------------------------------------------------------
+	-------------------------- Database and Configuration setup  --------------------------
+	---------------------------------------------------------------------------------------------------------------------------------------------
 	self.db = LibStub("AceDB-3.0"):New("PBPM", defaults)
+	
 
-	
-	
+
+	--CustomTracks   SoundLibrary   SoundEffects   BPAbilitySounds
+	if self.db.profile.CustomTracks ~= nil then
+		for k,y in pairs (self.db.profile.CustomTracks) do
+			self.db.global.CustomTracks[k] = y;
+		end
+		self.db.profile.CustomTracks = nil
+	end
+	if self.db.profile.SoundLibrary ~= nil then
+		for k,y in pairs (self.db.profile.SoundLibrary) do
+			self.db.global.SoundLibrary[k] = y;
+		end
+		self.db.profile.SoundLibrary = nil
+	end
+	if self.db.profile.SoundEffects ~= nil then
+		for k,y in pairs (self.db.profile.SoundEffects) do
+			self.db.global.SoundEffects[k] = y;
+		end
+		self.db.profile.SoundEffects = nil
+	end
+	if self.db.profile.BPAbilitySounds ~= nil then
+		for k,y in pairs (self.db.profile.BPAbilitySounds) do
+			self.db.global.BPAbilitySounds[k] = y;
+		end
+		self.db.profile.BPAbilitySounds = nil
+	end
 	PetBattlePokemonMusic:FillSoundListUI()
-
 	local config = LibStub("AceConfig-3.0")
 	local registry = LibStub("AceConfigRegistry-3.0")
 
@@ -1303,10 +1496,10 @@ function PetBattlePokemonMusic:OnInitialize()
 							CreateCust	= dialog:AddToBlizOptions("Create Custom Track", "Create Custom Track", "Pet Battle Pokemon Mod"),
 							Custs		= dialog:AddToBlizOptions("Custom Tracks", "Custom Tracks", "Pet Battle Pokemon Mod"),
 							BPS			= dialog:AddToBlizOptions("Battle Pet Sounds", "Battle Pet Sounds", "Pet Battle Pokemon Mod")
-		--,
-		--Tracks = dialog:AddToBlizOptions("Custom Tracks", "Custom Tracks", "PetBattlePokemonMusic")
-						}
-	-- Register Events.
+	}
+	---------------------------------------------------------------------------------------------------------------------------------------------
+	---------------------------------------------- Register Events ----------------------------------------------
+	---------------------------------------------------------------------------------------------------------------------------------------------
 	self:RegisterEvent("PET_BATTLE_OPENING_START")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	self:RegisterEvent("PET_BATTLE_CLOSE")
@@ -1316,7 +1509,7 @@ function PetBattlePokemonMusic:OnInitialize()
 	self:RegisterEvent("PET_BATTLE_PET_ROUND_RESULTS")
 	self:RegisterEvent("CHAT_MSG_PET_BATTLE_COMBAT_LOG")
 	self:RegisterEvent("CHAT_MSG_PET_BATTLE_INFO")
-
+	---------------------------------------------------------------------------------------------------------------------------------------------
 	--  Set up Functions.
 	PetBattlePokemonMusic:SetUpSL()
 	PetBattlePokemonMusic:FillCustomWild()
@@ -1324,179 +1517,142 @@ function PetBattlePokemonMusic:OnInitialize()
 	PetBattlePokemonMusic:SetUpCustomCreator()
 	PetBattlePokemonMusic:FillCustomLib()
 end
+function PetBattlePokemonMusic:OnEnable()
+
+end
+
+function PetBattlePokemonMusic:OnDisable()
+    -- Called when the addon is disabled
+end
+
+function PetBattlePokemonMusic:IsStartEnabled()
+	return PetBattlePokemonMusic.db.global.StartSoundOn;
+end
+function PetBattlePokemonMusic:IsVictoryEnabled()
+	return PetBattlePokemonMusic.db.global.VictorySoundOn;
+end
+
 ---
 --
 --@param event The name of the event.
 --@param
 function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_INFO(event, ...)
-	demo = {...}
 
-	for i=1,#demo do
-		--print((i+1)..".".." "..tostring(demo[i]))
-		
-	end
 end
 function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_COMBAT_LOG(...)
-		demo = {...}
-	--print("PB Combat log " .. #demo)
+	demo = {...}
 	str = ""
 	--Basic Damage Dealing  INTERFACE\\.*\\.*.%BLP:14|
 	--print(strfind((demo[2]),"INTERFACE\\.*\\.*.%BLP:14|"))
 	w,ty = strfind((demo[2]),"HbattlePetAbil:(%d*):%d*:%d*:%d*|h%[.*%]|h|r")
 	if ty ~= nil then
-	--print("FGG")
-	--print(strsub((demo[2]),ty+1))
-	--print(strsub((demo[2]),1,ty))
-	rwr , qwe= strfind((strsub((demo[2]),1,ty)),"INTERFACE\\.*\\.*.%BLP:14.*")
-	--print(strsub((strsub((demo[2]),1,ty)),qwe+1))
+		rwr , qwe= strfind((strsub((demo[2]),1,ty)),"INTERFACE\\.*\\.*.%BLP:14.*")
 	end
+	-- ================================================================================================================================================================================= --
+	--   Damage
+	-- ================================================================================================================================================================================= --
 	if strfind(tostring(demo[2]),BPAPatternDealtYour) ~= nil then
-		--print("Damage dealt to yours")
 		e1, e2, goal = strfind(demo[2],BPAPatternDealtYour)
 		sd, rqw, qrr = strfind(goal,BPApattern)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
 				end
 			end
-		
 	end
+	-- Damage to enemy.
 	if strfind(demo[2],BPAPatternDealtEnemy) ~= nil then
-		--print("Damage dealt to enemy")
 		e1, e2, goal = strfind(demo[2],BPAPatternDealtEnemy)
 		e1, e2, goal = strfind(demo[2],BPAPatternDealtEnemy)
 		sd, rqw, qrr = strfind(goal,BPApattern)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
 				end
 			end
-		
 	end
+	-- ================================================================================================================================================================================= --
 	--MISSED
+	-- ================================================================================================================================================================================= --
 	if strfind(demo[2],BPAPatternYourMiss  ) ~= nil then
-
 		e1, e2, goal,g2 = strfind(demo[2],BPAPatternYourMiss )
 		e1, e2, goal, g2 = strfind(demo[2],BPAPatternYourMiss )
 		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
-		--print (goal)
-		--print (qrr)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Missed.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Missed.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File].FileName,"Master")
 				end
 			end
-		
 	end
 	if strfind(demo[2],BPAPatternEnemyMiss  ) ~= nil then
-
 		e1, e2, goal,g2 = strfind(demo[2],BPAPatternEnemyMiss )
 		e1, e2, goal, g2 = strfind(demo[2],BPAPatternEnemyMiss )
 		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
-		--print (goal)
-		--print (qrr)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Missed.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Missed.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Missed.File].FileName,"Master")
 				end
 			end
-		
 	end	
-	--BPAPatternHealYour
+	-- ================================================================================================================================================================================= --
 	--HEALED
+	-- ================================================================================================================================================================================= --
 	if strfind(tostring(demo[2]),BPAPatternHealYour) ~= nil then
-		--print("heal")
 		e1, e2, goal = strfind(demo[2],BPAPatternHealYour)
 		sd, rqw, qrr = strfind(goal,BPApattern)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
+				PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
 				end
 			end
-		
 	end
 	if strfind(demo[2],BPAPatternHealEnemy) ~= nil then
-		--print("heal")
+
 		e1, e2, goal = strfind(demo[2],BPAPatternHealEnemy)
 		e1, e2, goal = strfind(demo[2],BPAPatternHealEnemy)
 		sd, rqw, qrr = strfind(goal,BPApattern)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
 				end
 			end
-		
 	end
+	-- ================================================================================================================================================================================= --
 	--Dodge
+	-- ================================================================================================================================================================================= --
 	if strfind(tostring(demo[2]),BPAPatternYourDodged) ~= nil then
-	
 		e1, e2, goal = strfind(demo[2],BPAPatternYourDodged)
 		sd, rqw, qrr = strfind(goal,BPApattern)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
 				end
 			end
-		
 	end
 	if strfind(demo[2],BPAPatternEnemyDodged) ~= nil then
-	
 		e1, e2, goal = strfind(demo[2],BPAPatternEnemyDodged)
 		e1, e2, goal = strfind(demo[2],BPAPatternEnemyDodged)
 		sd, rqw, qrr = strfind(goal,BPApattern)
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+	
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName,"Master")
 				end
 			end
-		
 	end
+	-- ================================================================================================================================================================================= --
 	--- APPLIED
+	-- ================================================================================================================================================================================= --
 	if strfind(demo[2],BPAPatternYourApp ) ~= nil then
-
 		e1, e2, goal,g2 = strfind(demo[2],BPAPatternYourApp)
 		e1, e2, goal, g2 = strfind(demo[2],BPAPatternYourApp)
 		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
-
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Applied.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Applied.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File].FileName,"Master")
 				end
 			end
 		
@@ -1507,131 +1663,106 @@ function PetBattlePokemonMusic:CHAT_MSG_PET_BATTLE_COMBAT_LOG(...)
 		e1, e2, goal, g2 = strfind(demo[2],BPAPatternEnemyApp )
 		sd, rqw, qrr, a2, a3 = strfind(g2,BPApattern)
 
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Applied.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Applied.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Applied.File].FileName,"Master")
 				end
 			end
-		
 	end
+	-- ================================================================================================================================================================================= --
 	--FADE
+	-- ================================================================================================================================================================================= --
+	-- Fades from enemy.
 	if strfind(demo[2],BPAPatternEnemyFade ) ~= nil then
-
 		e1, e2, goal,g2 = strfind(demo[2],BPAPatternEnemyFade)
 		e1, e2, goal, g2 = strfind(demo[2],BPAPatternEnemyFade)
 		sd, rqw, qrr, a2, a3 = strfind(goal,BPApattern)
 
-		--print(qrr)
-		
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Faded.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Faded.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File].FileName,"Master")
 				end
 			end
-		
 	end
 	--fade
 	if strfind(demo[2],BPAPatternYourFade  ) ~= nil then
-		--print("FADE")
+
 		e1, e2, goal,g2 = strfind(demo[2],BPAPatternYourFade )
 		e1, e2, goal, g2 = strfind(demo[2],BPAPatternYourFade )
 		sd, rqw, qrr, a2, a3 = strfind(goal,BPApattern)
 
-	
-			--print(PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File)
-			if PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)]~= nil then
-				if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Faded.File]~= nil then
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Faded.File].FileName,"Master")
-			--PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.BPAbilitySounds[tonumber(qrr)].Damage.File].FileName
+			if PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)]~= nil then
+				if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File]~= nil then
+					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.BPAbilitySounds[tonumber(qrr)].Faded.File].FileName,"Master")
 				end
 			end
-		
 	end
 	iorww = strfind(demo[2],"HbattlePetAbil:")
 	if iorww ~= nil then
 		str = strsub(demo[2],iorww)
-		--print(strsub(str,16))
 		werer = strfind(strsub(str,16),":")
-
 		if werer ~= nil then
 		--	print(strsub(strsub(str,16),1,werer-1))
 		end
 	end
 	--"|cff4e96f7|HbattlePetAbil:abilityID:maxHealth:power:speed|h[text]|h|r"
-	
-	
 	--ICON battlePetAbil " dealt " # " damage to enemy " ICON2 EnemyName
-	
 end
 
-function PetBattlePokemonMusic:OnEnable()
-    -- Called when the addon is enabled
-
-    -- Print a message to the chat frame
-
-end
-
-function PetBattlePokemonMusic:OnDisable()
-    -- Called when the addon is disabled
-end
 ---This function handles the event when a pet battle starts.
 --@param event Event Name
 function PetBattlePokemonMusic:PET_BATTLE_OPENING_START(event,...)
+	--TODO adjust volumes of music and master.
+	OldMusicVolume = GetCVar("Sound_MusicVolume")
+	OldMasterVolume = GetCVar("Sound_MasterVolume")
 
-	demo = {...}
-	--print("PET_BATTLE_OPENING_START " .. #demo)
-	for i=1,#demo do
-		--print(i+1..".".." "..tostring(demo[i]))
-		
-	end
---PokemonBattleMusicEffects[4] = {	Name = "Ruby, Saphire, & Emerald Wild Pokemon Battle", 
---											StartSound = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild Start.ogg",
---											StartLength = 2.485,
---											MusicTrack = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\FR LG\\FR LG Wild.ogg"}
 	if C_PetBattles.IsWildBattle() then
-		if PetBattlePokemonMusic.db.profile.Wild.Custom then
-			if PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Wild.CustomTrack] ~= nil then
-				
-				bla, currentSound =PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Wild.CustomTrack].StartSoundKey].FileName, "Master")
 
-	--PlaySoundFile("Interface\\AddOns\\PetBattlePokemonMusic\\Music\\Poke RSE Wild Start.ogg","Master")
-			battleTimer=	self:ScheduleTimer("PlayBattleTrack",PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Wild.CustomTrack].StartSoundKey].Length)
+		if PetBattlePokemonMusic.db.global.Wild.Custom then
+			if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.CustomTrack] ~= nil then
+				SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Music )
+				SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master )
+				if PetBattlePokemonMusic:IsStartEnabled() then
+					bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.CustomTrack].StartSoundKey].FileName, "Master")
+					battleTimer =	self:ScheduleTimer("PlayBattleTrack",PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.CustomTrack].StartSoundKey].Length)
+				else
+					PetBattlePokemonMusic:PlayBattleTrack()
+				end
 			end
-	else
-			bla, currentSound =PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Wild.Track].StartSoundKey].FileName, "Master")
+		else
+			SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Music )
+			SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master )
+			if PetBattlePokemonMusic:IsStartEnabled() then
 
-	--PlaySoundFile("Interface\\AddOns\\PetBattlePokemonMusic\\Music\\Poke RSE Wild Start.ogg","Master")
-			battleTimer =self:ScheduleTimer("PlayBattleTrack",PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Wild.Track].StartSoundKey].Length)
+				bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Wild.Track].StartSoundKey].FileName, "Master")
+				battleTimer = self:ScheduleTimer("PlayBattleTrack",PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Wild.Track].StartSoundKey].Length)
+			else
+				PetBattlePokemonMusic:PlayBattleTrack()
+			end
 		end
-		
 	else
-		bla, currentSound =PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Trainer.Track].StartSoundKey].FileName, "Master")
-
-	--PlaySoundFile("Interface\\AddOns\\PetBattlePokemonMusic\\Music\\Poke RSE Wild Start.ogg","Master")
-	battleTimer=	self:ScheduleTimer("PlayBattleTrack",PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Trainer.Track].StartSoundKey].Length)
+		SetCVar("Sound_MusicVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Music )
+		SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Master )
+		if PetBattlePokemonMusic:IsStartEnabled() then
+			bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Trainer.Track].StartSoundKey].FileName, "Master")
+			battleTimer =	self:ScheduleTimer("PlayBattleTrack",PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Trainer.Track].StartSoundKey].Length)
+		else
+			PetBattlePokemonMusic:PlayBattleTrack()
+		end
 	end
 end
 --@param event The event name.
 function PetBattlePokemonMusic:PET_BATTLE_OVER(event,...)
 	demo = {...}
-	--print("PET_BATTLE_OVER " .. #demo)
-	for i=1,#demo do
-	--	print(i+1..".".." "..tostring(demo[i]))
-		
-	end
 end
 ---
 --
 function PetBattlePokemonMusic:PET_BATTLE_CLOSE(...)
---PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Wild.Track]
+
 	StopMusic();
 	SetCVar("Sound_EnableMusic", OldMusicValue )
+	SetCVar("Sound_MusicVolume", OldMusicVolume )
+	SetCVar("Sound_MasterVolume", OldMasterVolume )
 	self:CancelTimer(battleTimer,true)
 	if currentSound ~= nil then
 		StopSound(currentSound)
@@ -1656,76 +1787,83 @@ function PetBattlePokemonMusic:PET_BATTLE_FINAL_ROUND(event,outcomenumber)
 		StopSound(currentSound)
 		currentSound=nil
 	end
-	if outcomenumber == 1 then
+	if outcomenumber == 1 and PetBattlePokemonMusic:IsVictoryEnabled() then
 	
 		if C_PetBattles.IsWildBattle() then
-			if PetBattlePokemonMusic.db.profile.Wild.Custom then
-				if PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Wild.CustomTrack] ~= nil then
-					if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Wild.CustomTrack].VictoryKey] ~= nil then
-						PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Wild.CustomTrack].VictoryKey].FileName, "Master")					
+			if PetBattlePokemonMusic.db.global.Wild.Custom then
+				if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.CustomTrack] ~= nil then
+					if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.CustomTrack].VictoryKey] ~= nil then
+						PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.CustomTrack].VictoryKey].FileName, "Master")					
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Wild.CustomTrack].VictoryKey].Length)
+					else
+						SetCVar("Sound_MasterVolume", OldMasterVolume )
 					end
 				end
 			else
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Wild.Track].VictoryKey].FileName, "Master")
+				PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Wild.Track].VictoryKey].FileName, "Master")
+				self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Wild.Track].VictoryKey].Length)
 			end
+
 		else
-			if PetBattlePokemonMusic.db.profile.Trainer.Custom then
-				if PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Trainer.CustomTrack] ~= nil then
-					if PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Trainer.CustomTrack].VictoryKey] ~= nil then
-						PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Trainer.CustomTrack].VictoryKey].FileName, "Master")					
+			if PetBattlePokemonMusic.db.global.Trainer.Custom then
+				if PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Trainer.CustomTrack] ~= nil then
+					if PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Trainer.CustomTrack].VictoryKey] ~= nil then
+						PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Trainer.CustomTrack].VictoryKey].FileName, "Master")					
+						self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Trainer.CustomTrack].VictoryKey].Length)
+					else
+						SetCVar("Sound_MasterVolume", OldMasterVolume )
 					end
 				end
 			else
-				PlaySoundFile(PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Trainer.Track].VictoryKey].FileName, "Master")
+				PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Trainer.Track].VictoryKey].FileName, "Master")
+				self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Trainer.Track].VictoryKey].Length)
 			end
+			--	SetCVar("Sound_MasterVolume", OldMasterVolume )
+			
 		end
 	end
-	
+end
+function PetBattlePokemonMusic:VictoryExpire(info,val)
+	SetCVar("Sound_MasterVolume", OldMasterVolume )
 end
 function PetBattlePokemonMusic:UNIT_SPELLCAST_SUCCEEDED(eveName, unitID, spell, rank, lineID, spellID)
 	
 	if spellID == 125801 then
-		--if PetBattlePokemonMusic.db.profile.SoundEffects.HealingSound.Enabled == true then
-			--PlaySoundFile(HealingSounds[PetBattlePokemonMusic.db.profile.SoundEffects.HealingSound.Value],"Master")
-		--PlayMusic("Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\Poke RBY Healing.ogg")
-		--end
-		print("Pokecenter disabled for now")
+		if PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Enabled == true then
+			PlaySoundFile(HealingSounds[PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Value],"Master")
+		end
 	end
 end
-
-
-
 
 -- Music Functions
 
 function PetBattlePokemonMusic:SwitchTrack()
-
+--TODO
 end
 
 function PetBattlePokemonMusic:PlayBattleTrack()
 	OldMusicValue = GetCVar("Sound_EnableMusic")
+
 	if C_PetBattles.IsWildBattle() then
-		if PetBattlePokemonMusic.db.profile.Wild.Always then
+		if PetBattlePokemonMusic.db.global.Wild.Always then
 			SetCVar("Sound_EnableMusic", 1 )
 		end
-		if PetBattlePokemonMusic.db.profile.Wild.On then
-			if PetBattlePokemonMusic.db.profile.Wild.Custom == false then
-				PlayMusic(PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Wild.Track].MusicKey].FileName)
+		if PetBattlePokemonMusic.db.global.Wild.On then
+			if PetBattlePokemonMusic.db.global.Wild.Custom == false then
+				PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Wild.Track].MusicKey].FileName)
 			else
-				PlayMusic(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Wild.CustomTrack].MusicKey].FileName)
+				PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.CustomTrack].MusicKey].FileName)
 			end
 		end
 	else
-		if PetBattlePokemonMusic.db.profile.Trainer.Always then
+		if PetBattlePokemonMusic.db.global.Trainer.Always then
 			SetCVar("Sound_EnableMusic", 1 )
 		end
-		if PetBattlePokemonMusic.db.profile.Trainer.On then
-			--PlayMusic(PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Trainer.Track].MusicTrack)
-			
-			if PetBattlePokemonMusic.db.profile.Trainer.Custom == false then
-				PlayMusic(PetBattlePokemonMusic.db.profile.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.profile.Trainer.Track].MusicKey].FileName)
+		if PetBattlePokemonMusic.db.global.Trainer.On then
+			if PetBattlePokemonMusic.db.global.Trainer.Custom == false then
+				PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.Trainer.Track].MusicKey].FileName)
 			else
-				PlayMusic(PetBattlePokemonMusic.db.profile.SoundLibrary[PetBattlePokemonMusic.db.profile.CustomTracks[PetBattlePokemonMusic.db.profile.Trainer.CustomTrack].MusicKey].FileName)
+				PlayMusic(PetBattlePokemonMusic.db.global.SoundLibrary[PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Trainer.CustomTrack].MusicKey].FileName)
 			end
 		end
 	end
