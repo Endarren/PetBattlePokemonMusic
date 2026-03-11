@@ -2937,7 +2937,7 @@ function PetBattlePokemonMusic:OnInitialize()
 	self:RegisterEvent("CHAT_MSG_PET_BATTLE_COMBAT_LOG")
 	self:RegisterEvent("CHAT_MSG_PET_BATTLE_INFO")
 	self:RegisterEvent("UI_ERROR_MESSAGE")
-	self:SecureHook("UnitPopup_OnClick","DuelCheck")
+	--self:SecureHook("UnitPopup_OnClick","DuelCheck")
 
 
 
