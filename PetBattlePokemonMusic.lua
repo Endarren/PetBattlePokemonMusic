@@ -318,7 +318,7 @@ local BattleMusic = {
 																							name		=	"Enabled",
 																							desc		=	"Toogle whether music is played for wild pet battles or not",
 																							order		=	2,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Wild.On = valu end,
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Wild.On = val end,
 																							get			=	function () return PetBattlePokemonMusic.db.global.Wild.On end
 																						},
 																		WildAlwaysOn =	{
@@ -399,7 +399,7 @@ local BattleMusic = {
 																							name		=	"Enabled",
 																							desc		=	"Toogle whether music is played for trainer pet battles or not",
 																							order		=	3,
-																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Trainer.On = valu end,
+																							set			=	function (info, val) PetBattlePokemonMusic.db.global.Trainer.On = val end,
 																							get			=	function () return PetBattlePokemonMusic.db.global.Trainer.On end
 																						},
 																	TrainerAlwaysOn =	{
