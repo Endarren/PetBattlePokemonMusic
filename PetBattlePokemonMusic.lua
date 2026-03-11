@@ -4532,7 +4532,6 @@ function PetBattlePokemonMusic:PET_BATTLE_OVER(event,...)
 end
 ---
 --
-
 function PetBattlePokemonMusic:VictoryPlayer()
 	PetBattlePokemonMusic:EndBattlePlayList()
 
@@ -4557,10 +4556,10 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				if PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Type == 3 then
 					--Custom
 					--PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Premade
-					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.PvP.Volume.Master * PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Custom].StartVol )
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.PvP.Volume.Master * PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Custom].VictoryVol )
 						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary [ 
-						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Custom].StartSoundKey ] .FileName, "Master")
---SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.Track].StartVol)
+						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.PvPTracks[currentBattlePlaylist.Target].Custom].VictoryKey ] .FileName, "Master")
+--SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.Track].VictoryVol)
 					--PetBattlePokemonMusic.db.global.CustomTracks[trackID]
 				end
 			else
@@ -4610,10 +4609,10 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				if PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Type == 3 then
 					--Custom
 					--PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Premade
-					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Master * PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Custom].StartVol )
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Trainer.Volume.Master * PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Custom].VictoryVol )
 						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary [ 
-						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Custom].StartSoundKey ] .FileName, "Master")
---SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.Track].StartVol)
+						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.TamerTracks[currentBattlePlaylist.Target].Custom].VictoryKey ] .FileName, "Master")
+--SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.Wild.Track].VictoryVol)
 					--PetBattlePokemonMusic.db.global.CustomTracks[trackID]
 				end
 			else
@@ -4645,7 +4644,8 @@ function PetBattlePokemonMusic:VictoryPlayer()
 			local playlistIndex = currentBattlePlaylist.A
 		end
 		if currentBattlePlaylist.Type == "Wild" then
-			if currentBattlePlaylist.Target ~= nil then
+			if currentBattlePlaylist.Target ~= nil  then
+				if PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target] ~= nil then
 				if PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Type == 1 then
 					PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Premade].VictoryKey].FileName, "Master")
 					self:ScheduleTimer("VictoryExpire",PetBattlePokemonMusic.db.global.SoundLibrary[PokemonBattleMusicEffects[PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Premade].VictoryKey].Length)
@@ -4662,10 +4662,11 @@ function PetBattlePokemonMusic:VictoryPlayer()
 				end
 				if PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Type == 3 then
 					--Custom
-					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master * PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Custom].StartVol )
+					SetCVar("Sound_MasterVolume", PetBattlePokemonMusic.db.global.Wild.Volume.Master * PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Volume.Master * PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Custom].VictoryVol )
 						bla, currentSound = PlaySoundFile(PetBattlePokemonMusic.db.global.SoundLibrary [ 
-						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Custom].StartSoundKey ] .FileName, "Master")
+						PetBattlePokemonMusic.db.global.CustomTracks[PetBattlePokemonMusic.db.global.WildTracks[currentBattlePlaylist.Target].Custom].VictoryKey ] .FileName, "Master")
 					--PetBattlePokemonMusic.db.global.CustomTracks[trackID]
+				end
 				end
 			else
 				if PetBattlePokemonMusic.db.global.Wild.MusicType == 1 then
