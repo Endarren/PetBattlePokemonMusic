@@ -58,6 +58,13 @@
 --	** Added trainer sound files to default database.
 --	* Add volume control.
 --	* TODO Add option to not use start.
+
+-- ================================================================================================================================================================================================================================================ --
+--	Version 2.0
+-- ================================================================================================================================================================================================================================================ --
+--	* TODO  Template adding functions.
+--	* TODO  Playlist
+
 PetBattlePokemonMusic = LibStub("AceAddon-3.0"):NewAddon("PetBattlePokemonMusic", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0" );
 
 local BPApattern = "|cff4e96f7|HbattlePetAbil:(%d*):%d*:%d*:%d*|h%[.*%]|h|r"
@@ -101,7 +108,7 @@ local block = " was blocked from striking "
 
 local SoundListUI = {}
 local SoundListUIKeys = {}
-
+local testersd = 0;
 --- This is a table of strings that are used for UI elements and cannot be used for sound names.
 local unusableSoundNames = {}
 	unusableSoundNames["AddNewSoundHeader"]		= true
@@ -245,7 +252,13 @@ local main = {
 							order		=	1,
 							set			=	function (info, val) PetBattlePokemonMusic.db.global.VictorySoundOn = val end,
 							get			= function () return PetBattlePokemonMusic.db.global.VictorySoundOn end
-		}
+		},
+TrainerCustom = {
+																							order		=	8,
+																							type		= "description",
+																							name		= testersd.." ",
+																							cmdHidden	=	true
+																						}
 	}
 }
 -- ================================================================================================================================================================================================================================================ --
@@ -558,10 +571,13 @@ PetBattlePokemonMusic:FillSoundListUI()
 													func		=	function () 
 																		self:CancelTimer(previewTimer,true)
 																		soundPlaying = false
+																		if stopSoundThing ~= nil then
 																		StopSound(stopSoundThing)
+																		end	
 																		PetBattlePokemonMusic:RemoveSoundFromAllAbilityOptions(soundkey)
 																		self.db.global.SoundLibrary[soundkey] = nil  
 																		SoundLibrary.args[soundkey] = nil 
+																		if self.db.CustomTracks ~= nil then
 																		for key, value in pairs(self.db.CustomTracks) do
 																			if value.StartSoundKey == soundkey then
 																				self.db.CustomTracks[key].StartSoundKey = nil
@@ -598,7 +614,8 @@ PetBattlePokemonMusic:FillSoundListUI()
 																				if self.db.global.Trainer.CustomTrack == key then
 																					self.db.global.Trainer.CustomTrack = nil
 																				end
-																			end	
+		end	
+		end
 																			
 																		end
 																	end, 
@@ -611,7 +628,9 @@ PetBattlePokemonMusic:FillSoundListUI()
 													func = function () 
 																	self:CancelTimer(previewTimer,true)
 																	soundPlaying = false
+																	if stopSoundThing ~= nil then
 																	StopSound(stopSoundThing)  
+		end
 															end, 
 													order = 4,
 												}
@@ -1066,7 +1085,7 @@ local BattlePetAbilitySoundSettings =	{
 
 																					demo,a1,a2,a3,a4,a5,a6 = C_PetBattles.GetAbilityInfoByID(tonumber(val))
 																					if a1 ~= nil then
-																					print(a2)
+																					--print(a2)
 																						PetBattlePokemonMusic:UpdateDesco(a1,a2)
 																					end
 																				 
@@ -1107,7 +1126,7 @@ function PetBattlePokemonMusic:AddAbility(id)
 	else
 		return false
 	end
-	end
+end
 	function PetBattlePokemonMusic:AddAbilityUI(id)
 	demo,a1,a2,a3,a4,a5,a6 = C_PetBattles.GetAbilityInfoByID(tonumber(id))
 	if demo ~= nil then
@@ -1331,7 +1350,7 @@ defaults.global.SoundLibrary["Red, Blue, & Yellow Trainer Start"] = {
 
 defaults.global.SoundLibrary["Red, Blue, & Yellow Trainer Battle"] = {				
 	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Trainer.ogg",
-	Length = 94.5}
+	Length = 95.5}
 
 defaults.global.SoundLibrary["Red, Blue, & Yellow Trainer Victory"] = {			
 	FileName = "Interface\\AddOns\\PetBattlePokemonMusic\\Music\\RBY\\RBY Trainer Victory.ogg",
@@ -1828,11 +1847,7 @@ function PetBattlePokemonMusic:VictoryExpire(info,val)
 end
 function PetBattlePokemonMusic:UNIT_SPELLCAST_SUCCEEDED(eveName, unitID, spell, rank, lineID, spellID)
 	
-	if spellID == 125801 then
-		if PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Enabled == true then
-			PlaySoundFile(HealingSounds[PetBattlePokemonMusic.db.global.SoundEffects.HealingSound.Value],"Master")
-		end
-	end
+
 end
 
 -- Music Functions
@@ -1867,4 +1882,13 @@ function PetBattlePokemonMusic:PlayBattleTrack()
 			end
 		end
 	end
+end
+
+do
+
+function PetBattlePokemonMusic:RegisterPremade(premade)
+	print(premade)
+	testersd = testersd +1
+	main.args.TrainerCustom.name = testersd.." mods loaded"
+end
 end
