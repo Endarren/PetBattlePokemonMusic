@@ -1806,6 +1806,7 @@ function PetBattlePokemonMusic:PET_BATTLE_FINAL_ROUND(event,outcomenumber)
 		StopSound(currentSound)
 		currentSound=nil
 	end
+	
 	if outcomenumber == 1 and PetBattlePokemonMusic:IsVictoryEnabled() then
 	
 		if C_PetBattles.IsWildBattle() then
